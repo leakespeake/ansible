@@ -1,0 +1,35 @@
+---
+- hosts: localhost
+  connection: local
+  become: yes
+  become_user: arturs
+  tasks:
+    - name: Install curl
+      apt:
+        name: curl
+
+    - name: Add Docker’s GPG key and set up stable repository
+      shell:
+        cmd: |
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+    - name: Install git and Docker
+      apt:
+        name:
+          - git
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        update_cache: yes
+        state: latest
+
+    - name: Install Canonical Livepatch
+      snap:
+        name:
+          - canonical-livepatch        
+
+    - name: Install VSCode
+      snap:
+        name: code
+        classic: yes

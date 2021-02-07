@@ -1,0 +1,12 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Install Chocolatey packages
+      win_chocolatey:
+        name:
+        - vscode
+        - git
+        - docker-desktop
+        - dropbox
+        state: latest
