@@ -2,11 +2,17 @@
 - hosts: localhost
   connection: local
   become: yes
-  become_user: arturs
+  become_user: barry
   tasks:
-    - name: Install curl
+    - name: Install base essentials
       apt:
-        name: curl
+        name:
+          - bashtop
+          - gzip
+          - ncdu
+          - net-tools
+          - nmap
+          - pydf
 
     - name: Add Docker’s GPG key and set up stable repository
       shell:
