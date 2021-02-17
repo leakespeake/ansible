@@ -1,0 +1,6 @@
+---
+- hosts: wsl2
+  connection: local
+  become: yes
+  become_user: root
+  tasks:

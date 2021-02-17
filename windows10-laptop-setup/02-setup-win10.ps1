@@ -1,3 +1,5 @@
+# Launch Powershell as Administrator prior to running script
+
 # Source location of WSL2 kernel update
 $source = 'https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi'
 # Destination to save the WSL2 kernel update

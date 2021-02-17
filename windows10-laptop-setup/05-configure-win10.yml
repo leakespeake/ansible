@@ -2,7 +2,7 @@
 - hosts: windows
   connection: local
   tasks:
-    - name: Install Chocolatey packages
+    - name: Install base essential packages with Chocolatey
       win_chocolatey:
         name:
         - vscode
