@@ -1,5 +1,5 @@
 ---
-- hosts: localhost
+- hosts: windows
   connection: local
   tasks:
     - name: Install Chocolatey packages

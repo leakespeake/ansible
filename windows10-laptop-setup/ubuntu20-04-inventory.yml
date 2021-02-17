@@ -1,4 +1,0 @@
-all:
-  hosts: localhost
-  vars:
-    ansible_user: barry

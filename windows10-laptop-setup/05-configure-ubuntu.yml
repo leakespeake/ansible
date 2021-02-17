@@ -1,8 +1,8 @@
 ---
-- hosts: localhost
+- hosts: wsl2
   connection: local
   become: yes
-  become_user: barry
+  become_user: root
   tasks:
     - name: Install base essentials
       apt:
