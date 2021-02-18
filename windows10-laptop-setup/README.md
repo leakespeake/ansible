@@ -22,13 +22,16 @@ This will become useful to re-create my development environment in the event tha
 
 - **01-setup-win10.ps1** --> setup WinRM for Ansible comms > enable WSL2 and Virtual Machine Platform > reboot
 - **02-setup-win10.ps1** --> download and install the WSL2 kernel update > set default version of WSL to 2 > install the WSL2 Ubuntu distro
-- **03-setup-ubuntu.sh** --> update & upgrade packages > install Ansible, pip and pywinrm
-- **04-configure-ubuntu.yml** --> install personal essential packages (apt) > install the ansible.windows plugin collection > update /etc/hosts
-- **05-configure-win10.yml** --> install personal essential packages (Chocolatey) > configure Powershell profile and environment variables > configure systems paths
+- **03-setup-ubuntu.sh** --> update & upgrade packages > install Ansible, pip and pywinrm > update /etc/hosts
+- **04-configure-ubuntu.yml** --> install personal essential packages (apt) > install the ansible.windows plugin collection
+- **05-configure-win10.yml** --> install personal essential packages (Chocolatey) > configure Powershell profile and environment variables > configure system paths
 - **06-configure-ubuntu.yml** --> amend ~/.bashrc > import dotfiles > import /etc configuration files
+- **07-site-yml** --> use the import_playbook directive to run the seperate playbooks back-to-back
 
 ---
 # USAGE
+
+The static nature of this project doesn't lend itself to the use of {{ ansible.variables }} or roles - however, we can use the **import_playbook** directive to run the seperate playbooks back-to-back.
 
 01-
 02-
@@ -36,6 +39,7 @@ This will become useful to re-create my development environment in the event tha
 ansible-playbook 04-configure-ubuntu.yml -i hosts --ask-become-pass --verbose
 ansible-playbook 05-configure-win10.yml -i hosts --ask-become-pass --verbose
 ansible-playbook 06-configure-ubuntu.yml -i hosts --ask-become-pass --verbose
+ansible-playbook 07-site.yml -i hosts --ask-become-pass --verbose
 
 ---
 # WinRM 

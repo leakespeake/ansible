@@ -1,4 +1,5 @@
 ---
+- name: Configure Ubuntu - install essential packages
 - hosts: wsl2
   connection: local
   become: yes
