@@ -28,11 +28,11 @@ This will become useful to re-create my dev environment in the event that I swit
 
 # USAGE
 
-The static nature of this project doesn't lend itself to the use of {{ ansible.variables }} or roles - however, we can use the **import_playbook** directive to run the seperate playbooks back-to-back.
+The static nature of this project doesn't lend itself to the use of {{ ansible.variables }} or roles - however, we can use the **import_playbook** directive to run the seperate playbooks back-to-back. Powershell scripts can be tested by appending **-WhatIf** and likewise **--check** for the playbooks. 
 
-./01-setup-win10.ps1
+.\01-setup-win10.ps1
 
-./02-setup-win10.ps1
+.\02-setup-win10.ps1
 
 ./03-setup-ubuntu.sh
 
@@ -54,7 +54,7 @@ ansible_connection=winrm
 ansible_connection=local
 ```
 
-This will allow us to target either one for a particular PLAY when we run a playbook - i.e. **hosts: windows** or **hosts: wsl2** - it also allows us to utilize a single hosts inventory file. Test each via;
+This will allow us to target either one for a particular PLAY when we run a playbook - i.e. **hosts: windows** or **hosts: wsl2** - it also allows us to utilize a single hosts inventory file. Test each one via;
 
 ```
 ansible -i hosts -m ping wsl2

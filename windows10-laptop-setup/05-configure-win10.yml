@@ -16,6 +16,8 @@
         - firefox
         - googlechrome
         - 7zip
+        - putty
+        - mremoteng
         state: latest
 
     - name: Enable file extension

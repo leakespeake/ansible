@@ -17,5 +17,5 @@ sudo apt install python-pip -y
 sudo pip install ansible "pywinrm>=0.3.0"
 
 echo "UPDATE SYSTEM HOSTS FILE"
-sudo 'echo "127.0.0.1 windows.local windows" >> /etc/hosts'
-sudo 'echo "127.0.0.1 wsl2.local wsl2" >> /etc/hosts'
+echo "127.0.0.1 windows.local windows" | sudo tee -a /etc/hosts
+echo "127.0.0.1 wsl2.local wsl2" | sudo tee -a /etc/hosts
