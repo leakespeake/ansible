@@ -13,8 +13,8 @@ sudo apt update && sudo apt -y upgrade
 sleep 10
 
 echo "INSTALL ANSIBLE"
-sudo apt install ansible python-pip -y
-sudo pip install "pywinrm>=0.3.0"
+sudo apt install python-pip -y
+sudo pip install ansible "pywinrm>=0.3.0"
 
 echo "UPDATE SYSTEM HOSTS FILE"
 sudo 'echo "127.0.0.1 windows.local windows" >> /etc/hosts'

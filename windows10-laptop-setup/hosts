@@ -5,11 +5,11 @@ windows.local
 wsl2.local 
 
 [windows:vars]
-ansible_user=barry
 ansible_connection=winrm
-ansible_winrm_server_cert_validation=ignore
+ansible_user=barry
 ansible_port=5985
 ansible_winrm_transport=basic
+ansible_winrm_server_cert_validation=ignore
 
 [wsl2:vars]
 ansible_connection=local

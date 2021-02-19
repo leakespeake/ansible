@@ -1,6 +1,6 @@
 # Launch Powershell as Administrator prior to running script
 
-# Setup WinRM for Ansible communications
+# Setup WinRM for Ansible comms - automatically opens the firewall ports and starts the WinRM service
 Enable-PSRemoting
 Set-Item -Path WSMan:\localhost\Service\Auth\Basic -Value $true
 Set-Item -Path WSMan:\localhost\Service\AllowUnencrypted -Value $true
