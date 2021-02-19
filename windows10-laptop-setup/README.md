@@ -1,7 +1,5 @@
 # Windows 10 Laptop Setup
 
-WORK IN PROGRESS...
-
 The purpose of this Ansible project is to locally automate (as much as possible) the software installation, updates and configuration for my Windows 10 development laptop and covers the following 2 environments;
 
 - Windows 10 Home (OS)
@@ -22,7 +20,7 @@ This will become useful to re-create my dev environment in the event that I swit
 - **02-setup-win10.ps1** --> download and install the WSL2 kernel update > set default version of WSL to 2 > install the WSL2 Ubuntu distro
 - **03-setup-ubuntu.sh** --> update & upgrade packages > install pip, Ansible and pywinrm > update /etc/hosts
 - **04-configure-ubuntu.yml** --> install personal essential packages (apt) > install the ansible.windows plugin collection
-- **05-configure-win10.yml** --> install personal essential packages (Chocolatey) > configure Powershell profile and environment variables > configure system paths
+- **05-configure-win10.yml** --> install personal essential packages (Chocolatey) > configure Powershell profile and environment variables > configure system paths and behaviour
 - **06-configure-ubuntu.yml** --> amend ~/.bashrc > import dotfiles > import /etc configuration files
 - **07-site-yml** --> use the import_playbook directive to run all playbooks sequentially
 
@@ -40,7 +38,7 @@ ansible-playbook 07-site.yml -i hosts --ask-become-pass --verbose
 
 # WinRM 
 
-The Ansible control node running in WSL2 will use the WinRM management protocol to communicate with the Windows OS. Ansible uses the **pywinrm** package to do this. There are several authentication options that utilize certificates, but I have chosen the simplist method - basic authentication with HTTP - reason being that all comms are local and use local accounts.
+The Ansible control node running in WSL2 will use the WinRM management protocol to communicate with the Windows OS. Ansible uses the **pywinrm** package to do this. There are several authentication options and I have chosen the simplist - basic authentication with HTTP - reason being that all comms are local and use local Windows accounts. When configuring WinRM to authenticate remotely and/or against a Windows domain, then certificates will be required.
 
 # /etc/hosts
 

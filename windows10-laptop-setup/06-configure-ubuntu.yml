@@ -1,16 +1,14 @@
 ---
 - name: Configure Ubuntu - configuration imports and file amendments
-- hosts: wsl2
+  hosts: wsl2
   connection: local
   become: yes
   become_user: root
   tasks:
     - name: Add favourite aliases to ~/.bashrc
-      lineinfile:
-        path: /etc/hosts
-        insertbefore: '# The following lines are desirable for IPv6*'
-        line: '127.0.0.1 windows.local windows'
-      lineinfile:
-        path: /etc/hosts
-        insertbefore: '# The following lines are desirable for IPv6*'
-        line: '127.0.0.1 wsl2.local wsl2'
+      blockinfile:
+        dest: /etc/hosts
+        block: |
+          alias update='sudo apt update && sudo apt -y upgrade'
+          alias path='echo $PATH | tr ":" "\n" | nl'
+          alias mount='mount |column -t'

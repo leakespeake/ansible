@@ -1,6 +1,6 @@
 ---
 - name: Configure Ubuntu - install essential packages
-- hosts: wsl2
+  hosts: wsl2
   connection: local
   become: yes
   become_user: root
@@ -11,9 +11,9 @@
           - bashtop
           - gzip
           - ncdu
+          - pydf
           - net-tools
           - nmap
-          - pydf
 
     - name: Add Docker’s GPG key and set up stable repository
       shell:

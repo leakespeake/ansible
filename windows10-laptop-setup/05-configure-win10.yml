@@ -1,6 +1,6 @@
 ---
 - name: Configure Windows 10 for development
-- hosts: windows
+  hosts: windows
   connection: local
   tasks:
     - name: Install Chocolatey
@@ -10,17 +10,27 @@
       win_chocolatey:
         name:
         - vscode
+        - vscode-python
+        - vscode-ansible
+        - vscode-docker
         - git
+        - terraform
+        - packer
         - docker-desktop
+        - microsoft-windows-terminal
         - notepadplusplus
         - firefox
         - googlechrome
         - 7zip
         - putty
         - mremoteng
+        - nmap
+        - filezilla
+        - python
+        - passwordsafe
         state: latest
 
-    - name: Enable file extension
+    - name: Show file extensions
       win_shell: |
         Push-Location
         Set-Location HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced

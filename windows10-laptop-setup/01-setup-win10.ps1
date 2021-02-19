@@ -17,7 +17,7 @@ exit
 
 
 # Setup WinRM for Ansible comms - automatically opens the firewall ports and starts the WinRM service
-Enable-PSRemoting
+Enable-PSRemoting -Force
 Set-Item -Path WSMan:\localhost\Service\Auth\Basic -Value $true
 Set-Item -Path WSMan:\localhost\Service\AllowUnencrypted -Value $true
 
