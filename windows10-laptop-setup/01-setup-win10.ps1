@@ -1,3 +1,6 @@
+# Assumes execution policy has been changed from the default (restricted) to unrestricted - as per;
+# Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted
+
 # Launch Powershell as Administrator via UAC prompt
 param([switch]$Elevated)
 function Check-Admin {
@@ -15,12 +18,12 @@ Start-Process powershell.exe -Verb RunAs -ArgumentList ('-noprofile -noexit -fil
 exit
 } 
 
-
-# Setup WinRM for Ansible comms - automatically opens the firewall ports and starts the WinRM service
-Enable-PSRemoting -Force
-Set-Item -Path WSMan:\localhost\Service\Auth\Basic -Value $true
-Set-Item -Path WSMan:\localhost\Service\AllowUnencrypted -Value $true
-
+# Setup WinRM for local Ansible comms - automatically opens firewall ports and starts the WinRM service
+# 'winrm quickconfig -force -quiet' is not required as 'Enable-PSRemoting' performs the same tasks and more!
+Enable-PSRemoting -SkipNetworkProfileCheck -Force
+Set-Item -Force -Path WSMan:\localhost\Service\Auth\Basic -Value $true
+#Set-Item -Force -Path WSMan:\localhost\Service\AllowUnencrypted -Value $true
+netsh advfirewall firewall add rule name="WinRM-HTTP" dir=in localport=5985 protocol=TCP action=allow
 
 # Enable WSL2 and Virtual Machine Platform then reboot
 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart

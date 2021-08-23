@@ -8,19 +8,20 @@
     - name: Install base essential packages with apt
       apt:
         name:
-          - bashtop
+          - htop
           - gzip
           - ncdu
           - pydf
           - net-tools
           - nmap
+          - curl
+          - openssh-server
 
     - name: Add Docker’s GPG key and set up stable repository
       shell:
         cmd: |
           curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
           sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-
     - name: Install git and Docker
       apt:
         name:
@@ -30,13 +31,7 @@
           - containerd.io
         update_cache: yes
         state: latest
-
-    - name: Install Canonical Livepatch
-      snap:
-        name:
-          - canonical-livepatch        
-
-    - name: Install VSCode
-      snap:
-        name: code
-        classic: yes
+    - name: Add user to docker group to negate need for sudo prefix
+      user:
+        name: $USER
+        group: docker
