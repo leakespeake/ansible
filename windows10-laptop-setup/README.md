@@ -26,6 +26,8 @@ This will become useful to re-create my dev environment in the event that I swit
 
 # USAGE
 
+All shell, Powershell and Ansible playbook files are written to pull the current users username value for flexibility. It is assumed you are logged on with the accounts you intend to use day-to-day. In the case of Ubuntu, this should be the initial account you create at setup as this is added to sudoers by default.
+
 The static nature of this project doesn't lend itself to the use of {{ ansible.variables }} or roles - however, we can use the **import_playbook** directive to run the seperate playbooks back-to-back. Powershell scripts can be tested by appending **-WhatIf** and likewise **--check** for the playbooks. 
 
 .\01-setup-win10.ps1
@@ -57,4 +59,18 @@ This will allow us to target either one for a particular PLAY when we run a play
 ```
 ansible -i hosts -m ping wsl2
 ansible -i hosts -m win_ping windows
+```
+
+# WinRM Troubleshooting (from WSL2)
+
+```
+curl -v {/etc/hosts windows IP}:5985 
+```
+
+# WinRM Troubleshooting (from Windows)
+
+```
+winrm enumerate winrm/config/listener
+
+winrs -r:http://127.0.0.1:5985/wsman -u:Administrator -p:Password ipconfig
 ```
