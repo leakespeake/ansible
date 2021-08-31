@@ -1,6 +1,6 @@
 ---
 - name: Configure Ubuntu - install essential packages
-  hosts: wsl2
+  hosts: localhost
   connection: local
   become: yes
   become_user: root
@@ -8,6 +8,7 @@
     - name: Install base essential packages with apt
       apt:
         name:
+          - bashtop
           - htop
           - gzip
           - ncdu
@@ -16,7 +17,6 @@
           - nmap
           - curl
           - openssh-server
-
     - name: Add Docker’s GPG key and set up stable repository
       shell:
         cmd: |
@@ -31,7 +31,7 @@
           - containerd.io
         update_cache: yes
         state: latest
-    - name: Add user to docker group to negate need for sudo prefix
+    - name: Add user to docker group
       user:
-        name: $USER
+        name: "{{ ubuntu_username }}"
         group: docker

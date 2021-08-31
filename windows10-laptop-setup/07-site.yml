@@ -1,4 +1,0 @@
----
-- import_playbook: 04-configure-ubuntu.yml
-- import_playbook: 05-configure-win10.yml
-- import_playbook: 06-configure-ubuntu.yml

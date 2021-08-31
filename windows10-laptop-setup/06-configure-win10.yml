@@ -1,11 +1,7 @@
 ---
 - name: Configure Windows 10 for development
   hosts: windows
-  connection: local
   tasks:
-    - name: Install Chocolatey
-      win_shell: Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-
     - name: Install base essential packages with Chocolatey
       win_chocolatey:
         name:
@@ -17,7 +13,6 @@
         - terraform
         - packer
         - docker-desktop
-        - microsoft-windows-terminal
         - notepadplusplus
         - firefox
         - googlechrome
@@ -29,7 +24,6 @@
         - python
         - passwordsafe
         state: latest
-
     - name: Show file extensions
       win_shell: |
         Push-Location
@@ -37,7 +31,6 @@
         Set-ItemProperty . HideFileExt "0"
         Pop-Location
         Stop-Process -processName: Explorer -force
-
     - name: Show hidden files
       win_shell: |
         $value = -not $Off.IsPresent

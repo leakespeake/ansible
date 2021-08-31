@@ -1,0 +1,9 @@
+all:
+  hosts: localhost
+  vars:
+    ansible_user: ansible
+    ansible_password: ansible
+    ansible_connection: winrm
+    ansible_port: 5986
+    ansible_winrm_transport: basic
+    ansible_winrm_server_cert_validation: ignore

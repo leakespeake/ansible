@@ -23,7 +23,7 @@ echo '# Remove local windows IP in /etc/hosts (if pre-existing) prior to dynamic
 echo "sudo sed '/windows/d' -i /etc/hosts" >> ~/.bashrc
 echo '' >> ~/.bashrc
 
-echo "UPDATE SYSTEM HOSTS FILE - WILL PERSIST DUE TO WSL.CONF NETWORK SETTINGS"
+echo "UPDATE SYSTEM HOSTS FILE (WINDOWS) - WILL PERSIST DUE TO WSL.CONF NETWORK SETTINGS"
 echo '# Dymanically add the IP assigned to Ethernet adapter vEthernet (WSL) into /etc/hosts.' >> ~/.bashrc
 echo '# Allows WinRM port connection from Ubuntu/WSL2 to Windows localhost.' >> ~/.bashrc
 cat <<EOT >> ~/.bashrc
@@ -32,6 +32,9 @@ if [ ! -n "$(grep -P "[[:space:]]windows" /etc/hosts)" ]; then
         printf "%s\t%s\n" "$windows" "windows" | sudo tee -a "/etc/hosts"
 fi
 EOT
+
+echo "UPDATE SYSTEM HOSTS FILE (WSL2) - WILL PERSIST DUE TO WSL.CONF NETWORK SETTINGS"
+echo "127.0.0.1       wsl2" | sudo tee --append /etc/hosts
 
 echo "PREP UBUNTU TO START DOCKER ON BOOT"
 echo '' >> ~/.bashrc
