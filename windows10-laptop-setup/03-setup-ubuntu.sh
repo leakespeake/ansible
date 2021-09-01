@@ -29,12 +29,12 @@ echo '# Allows WinRM port connection from Ubuntu/WSL2 to Windows localhost.' >> 
 cat <<EOT >> ~/.bashrc
 export windows=$(cat /etc/resolv.conf | grep nameserver | awk '{ print $2 }')
 if [ ! -n "$(grep -P "[[:space:]]windows" /etc/hosts)" ]; then
-        printf "%s\t%s\n" "$windows" "windows" | sudo tee -a "/etc/hosts"
+        printf "%s\t%s\n" "$windows" "windows        windows.local" | sudo tee -a "/etc/hosts"
 fi
 EOT
 
 echo "UPDATE SYSTEM HOSTS FILE (WSL2) - WILL PERSIST DUE TO WSL.CONF NETWORK SETTINGS"
-echo "127.0.0.1       wsl2" | sudo tee --append /etc/hosts
+echo "127.0.0.1       wsl2           wsl2.local" | sudo tee --append /etc/hosts
 
 echo "PREP UBUNTU TO START DOCKER ON BOOT"
 echo '' >> ~/.bashrc

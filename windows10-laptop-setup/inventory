@@ -1,16 +1,17 @@
 [windows]
-windows.local 
+windows.local
 
 [wsl2]
-wsl2.local 
+wsl2.local
 
 [windows:vars]
 ansible_connection=winrm
 ansible_user=ansible
+ansible_password=ansible
 ansible_port=5986
 ansible_winrm_transport=basic
 ansible_winrm_server_cert_validation=ignore
 
 [wsl2:vars]
 ansible_connection=local
-ansible_user=root
+ubuntu_username=barry
