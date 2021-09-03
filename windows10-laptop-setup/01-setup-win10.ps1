@@ -27,6 +27,7 @@ Set-Item -Force WSMan:\localhost\Service\Auth\Basic -Value $true
 
 #Set-Item -Force -Path WSMan:\localhost\Service\AllowUnencrypted -Value $true
 netsh advfirewall firewall add rule name="WinRM-HTTP" dir=in localport=5985 protocol=TCP action=allow
+netsh advfirewall firewall add rule name="WinRM-HTTPS" dir=in localport=5986 protocol=TCP action=allow
 
 # Enable WSL2 and Virtual Machine Platform then reboot
 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart

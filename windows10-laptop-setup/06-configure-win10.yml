@@ -2,7 +2,7 @@
 - name: Configure Windows 10 for development
   hosts: windows
   tasks:
-    - name: Install base essential packages with Chocolatey
+    - name: Install favourite base packages with Chocolatey
       win_chocolatey:
         name:
         - vscode

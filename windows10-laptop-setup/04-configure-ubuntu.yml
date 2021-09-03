@@ -5,7 +5,7 @@
   become: yes
   become_user: root
   tasks:
-    - name: Install base essential packages with apt
+    - name: Install favourite base packages with apt
       apt:
         name:
           - bashtop
