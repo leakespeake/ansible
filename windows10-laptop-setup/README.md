@@ -14,7 +14,7 @@ The purpose of this Ansible project is to locally automate the software installa
 
 ## Content
 
-You can use **git clone git@github.com:leakespeake/ansible.git** from your desired Windows/Powershell and WSL2/Ubuntu directories then utilise the scripts applicable for each environment (numbered by order) - which are; 
+You can use `git clone git@github.com:leakespeake/ansible.git` from your desired Windows/Powershell and WSL2/Ubuntu directories then utilise the scripts applicable for each environment (numbered by order) - which are; 
 
 - **01-setup-win10.ps1** --> setup WinRM to accept comms from Ansible > enable WSL2 and Virtual Machine Platform features > reboot
 - **02-setup-win10.ps1** --> download then install the WSL2 kernel update > set default version of WSL to 2 > install the WSL2 Ubuntu distro
@@ -65,6 +65,8 @@ ansible -i $HOME/ansible/windows10-laptop-setup/inventory wsl2 -m ping
 ansible -i $HOME/ansible/windows10-laptop-setup/inventory windows -m win_ping
 ```
 
+If both look fine, the playbooks should be ready to run without issue. If there are any comms issues, create a verbose output with **-vvvv** and check the various troubleshooting commands below.
+
 ## WinRM Troubleshooting (from WSL2)
 
 ```
@@ -84,6 +86,8 @@ winrs -r:http://127.0.0.1:5985/wsman -u:ansible -p:password ipconfig
 ```
 
 ## General Troubleshooting
+
+If the WinRM configuration, open firewall ports and listening services all check out - also look at the Windows AV as this may be preventing comms from the Ansible control node in WSL to Windows localhost.
 
 ```
 choco list --localonly
