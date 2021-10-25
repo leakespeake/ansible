@@ -1,0 +1,13 @@
+[Unit]
+Description=Prometheus Node Exporter version {{ node_exporter_version }}
+After=network-online.target
+
+[Service]
+User={{ node_exporter_user }}
+Group={{ node_exporter_user }}
+Restart=on-failure
+Type=simple
+ExecStart=/opt/node_exporter/node_exporter {% for flag, flag_value in node_exporter_config_flags.items() %}--{{ flag }}={{ flag_value }} {% endfor %}
+
+[Install]
+WantedBy=multi-user.target

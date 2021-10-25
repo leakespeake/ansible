@@ -1,0 +1,107 @@
+---
+- name: Additional Ubuntu 20.04 configuration
+  #hosts: all
+  hosts: ubuntu_20_04_stg
+  become: yes
+  vars:
+    ubuntu_username: ubuntu
+    ubuntu_extra_user: nested
+    ufw_ssh_port: 22
+    ufw_docker_port: 2376
+    ufw_node_exporter_port: 9100
+
+  tasks:
+    # ADD 2ND USER - password hash generated via: mkpasswd --method=sha-512
+    - name: Create secondary logon account
+      user:
+        name: "{{ ubuntu_extra_user }}"
+        password: '$6$tp81zrQSQMgGTLiZ$piunb.oK8WOx5x08dPQ9kUVMKtdCuDDgEJYV78N/sT9dgtzM9R9kn/TI7Us6G562Zb78BeM1RMehutGpj9Q6A.'
+        groups:
+          - sudo
+          - docker
+        state: present
+
+    # CRON JOB TO UPDATE SYSTEM - crontab -l / crontab -e  
+    - name: Cron jobs
+      cron:
+        name: Update packages
+        user: "{{ ubuntu_username }}"
+        special_time: monthly
+        job: "sudo apt update && sudo apt -y upgrade"
+
+    # ADD ALIASES
+    - name: Add favourite aliases to ~/.bashrc
+      blockinfile:
+        path: "{{ item.path }}"
+        insertbefore: "# Alias definitions"
+        block: |
+          # Personal aliases
+          alias update='sudo apt update && sudo apt -y upgrade'
+          alias path='echo $PATH | tr ":" "\n" | nl'
+          alias mount='mount |column -t'
+          alias ls='ls -la'
+          alias top='bashtop'
+          alias df='pydf'
+          alias du='ncdu'
+          alias netstat='netstat -tulpn'
+          alias hs='history | grep'
+          alias myip='curl ipinfo.io/ip'
+      with_items:
+        - {path: "/home/{{ ubuntu_username }}/.bashrc"}
+        - {path: "/home/{{ ubuntu_extra_user }}/.bashrc"}    
+
+    - name: Insert empty line before ANSIBLE MANAGED BLOCK
+      replace:
+        path: "{{ item.path }}"
+        regexp: "(?<=.\n)# BEGIN ANSIBLE MANAGED BLOCK$"
+        replace: "\n# BEGIN ANSIBLE MANAGED BLOCK"   
+      with_items:
+        - {path: "/home/{{ ubuntu_username }}/.bashrc"}
+        - {path: "/home/{{ ubuntu_extra_user }}/.bashrc"}            
+
+    - name: Insert empty line after ANSIBLE MANAGED BLOCK
+      replace:
+        path: "{{ item.path }}"
+        regexp: "(?<=.\n)# Alias definitions.$"
+        replace: "\n# Alias definitions."    
+      with_items:
+        - {path: "/home/{{ ubuntu_username }}/.bashrc"}
+        - {path: "/home/{{ ubuntu_extra_user }}/.bashrc"}            
+
+    # INSTALL / CONFIGURE / ENABLE UFW (uncomplicated firewall)
+    - name: Install ufw
+      apt:
+        name: ufw
+        state: present
+
+    - name: Configure ufw defaults
+      ufw: direction={{ item.direction }} policy={{ item.policy }}
+      with_items:
+        - { direction: 'incoming', policy: 'deny' }
+        - { direction: 'outgoing', policy: 'allow' }
+      notify:
+        - Restart ufw
+
+    - name: Configure ufw rules
+      ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }}
+      with_items:
+        - { rule: 'allow', port: '{{ ufw_ssh_port }}', proto: 'tcp' }
+        - { rule: 'allow', port: '{{ ufw_docker_port }}', proto: 'tcp' }
+        - { rule: 'allow', port: '{{ ufw_node_exporter_port }}', proto: 'tcp' }
+      notify:
+        - Restart ufw
+
+    - name: Enable ufw logging
+      ufw: logging=on
+      notify:
+        - Restart ufw
+
+    - name: Enable ufw
+      ufw: 
+        state: enabled
+
+  handlers:
+  - name: Restart ufw
+    service:
+      name: ufw
+      state: restarted

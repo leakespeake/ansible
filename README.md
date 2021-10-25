@@ -7,8 +7,8 @@ Various Ansible deployments against vSphere, AWS and GCP.
 # Ansible Best Practices
 General best practices on how to organise, develop and deploy your ansible playbooks and roles - IN PROGRESS. 
 
-## 1. DRY (Don't Repeat Yourself)
-Ansible has different mechanisms to help you be DRY but it requires that you plan your code in advance. So as an overarching principal when writing your code think how you can make it reusable;
+## 1. DRY code
+Ansible has different mechanisms for this but it requires that you plan your code in advance. So as an overarching principal when writing your code think how you can make it reusable;
    * import_playbook
    * include/import_role
    * include/import_tasks   
@@ -16,7 +16,7 @@ Ansible has different mechanisms to help you be DRY but it requires that you pla
 ## 2. Playbook Organisation
 
 ### Playbook Directory Structure
-Common playbook structure includes some playbooks, an inventory, directories for roles and directories for variables:
+Common playbook structure includes some playbooks, an inventory, directories for roles and directories for variables;
 
 ```bash
 ├── ansible.cfg
@@ -25,6 +25,7 @@ Common playbook structure includes some playbooks, an inventory, directories for
 ├── inventory.ini
 ├── playbook1.yml
 ├── playbook2.yml
+├── playbook3.yml
 └── roles
     ├── role1
     │   └── tasks
@@ -32,8 +33,9 @@ Common playbook structure includes some playbooks, an inventory, directories for
     ├── role2
     │   └── tasks
     │       └── main.yml
-    └── roles.yml
+    └── role3.yml
 ```
+I recommend matching the playbook name to the role name for clarity - i.e. **node-exporter.yml** and **/roles/node-exporter** 
 
 ### Imports
 You can add import_tasks directives like so:
@@ -87,7 +89,7 @@ Ansible roles provide a way for you to make it easier to reuse Ansible code gene
    * Use `ansible-galaxy` to create the skeleton directory structure for a ansible role:
 
 ```bash
-ansible-galaxy role init <role_name>
+ansible-galaxy role init roles/<role_name>
 ```
 
 This give you a template structure like below:

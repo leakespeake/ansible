@@ -1,0 +1,9 @@
+---
+- name: install and configure prometheus node exporter
+  #hosts: all
+  hosts: ubuntu_20_04_stg
+  become: yes
+  tasks:
+    - name: use the node exporter role
+      import_role:
+        name: node-exporter
