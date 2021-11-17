@@ -14,7 +14,7 @@ Many options are available with LVM, such as creating a new volume group with ne
 - add /dev/sdb1 partition (created by parted) to the existing 'ubuntu-vg' volume group - then create a new logical volume to mount to /var
 - then have the option to add additional physical disks to this volume group later (if needed) to then either create a new logical volume (for another new mount point) - or - extend the space of a current logical volume (in this case either the one serving **/** or the one serving **/var**)
 
-![Screenshot](LVM.jpg)
+![Screenshot](https://github.com/leakespeake/ansible/blob/master/LVM.jpg)
 
 The skeleton directory structure for this role was created with Ansible Galaxy;
 
