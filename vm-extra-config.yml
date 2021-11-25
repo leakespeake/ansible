@@ -16,6 +16,7 @@
       user:
         name: "{{ ubuntu_extra_user }}"
         password: '$6$tp81zrQSQMgGTLiZ$piunb.oK8WOx5x08dPQ9kUVMKtdCuDDgEJYV78N/sT9dgtzM9R9kn/TI7Us6G562Zb78BeM1RMehutGpj9Q6A.'
+        create_home: yes
         groups:
           - sudo
           - docker
