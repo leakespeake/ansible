@@ -69,6 +69,15 @@
         - {path: "/home/{{ ubuntu_username }}/.bashrc"}
         - {path: "/home/{{ ubuntu_extra_user }}/.bashrc"}            
 
+    # RELOAD BASHRC
+    - name: Source bashrc files to load new aliases
+      shell: |
+        source /home/{{ ubuntu_username }}/.bashrc
+        source /home/{{ ubuntu_extra_user }}/.bashrc
+        exit 0
+      args:
+        executable: /bin/bash
+
     # INSTALL / CONFIGURE / ENABLE UFW (uncomplicated firewall)
     - name: Install ufw
       apt:
