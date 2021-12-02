@@ -1,6 +1,6 @@
 ---
 - name: LVM management with disk partitioning, formatting and mounting
-  hosts: ubuntu_20_04_prd
+  hosts: all  # amend ansible groups via inventory.ini for centralized node targeting (across playbooks)
   become: yes
   become_method: sudo
 

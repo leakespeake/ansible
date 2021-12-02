@@ -1,7 +1,6 @@
 ---
 - name: install and configure prometheus node exporter
-  #hosts: all
-  hosts: ubuntu_20_04_stg
+  hosts: all  # amend ansible groups via inventory.ini for centralized node targeting (across playbooks)
   become: yes
   tasks:
     - name: use the node exporter role

@@ -1,7 +1,6 @@
 ---
 - name: Additional Ubuntu 20.04 configuration
-  #hosts: all
-  hosts: ubuntu_20_04_stg
+  hosts: all  # amend ansible groups via inventory.ini for centralized node targeting (across playbooks)
   become: yes
   vars:
     ubuntu_username: ubuntu
