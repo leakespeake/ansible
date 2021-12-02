@@ -6,32 +6,25 @@
 
   vars:
     parted:
-    # creates /dev/sdb1 partition
+    # creates /dev/sdb1 partition from /dev/sdb block device
       - device: /dev/sdb
         number: 1
         label: gpt
         flags: [ lvm ]
         state: present
     lvg:
-    # add /dev/sdb1 partition to our volume group, in addition to /dev/sda3
+    # add /dev/sdb1 partition to our volume group - in addition to /dev/sda3
       - vg: ubuntu-vg
-        pvs: "/dev/sda3,/dev/sdb1"
+        pvs:
+          - /dev/sda3
+          - /dev/sdb1
     lvol:
-    # create a new logical volume 'lv-data' from our volume group
+    # extend existing logical volume 'ubuntu-lv' using the size of all remaining space in the volume group, then resize the filesystem
       - vg: ubuntu-vg
-        lv: lv-data
+        lv: ubuntu-lv
         shrink: no
-        size: 100%FREE
-    filesystem:
-    # format the logical volume with the ext4 filesystem
-      - fstype: ext4
-        dev: /dev/ubuntu-vg/lv-data
-    mount:
-    # create a persistent mount in /etc/fstab
-      - path: /var
-        src: /dev/ubuntu-vg/lv-data
-        fstype: ext4
-        opts: defaults
+        size: 100%VG
+        resizefs: true
     
   roles:
     - disk-config
