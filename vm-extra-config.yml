@@ -1,6 +1,7 @@
 ---
 - name: Additional Ubuntu 20.04 configuration
-  hosts: all  # amend ansible groups via inventory.ini for centralized node targeting (across playbooks)
+  #hosts: all
+  hosts: ubuntu_20_04_prd
   become: yes
   vars:
     ubuntu_username: ubuntu
@@ -28,6 +29,16 @@
         user: "{{ ubuntu_username }}"
         special_time: monthly
         job: "sudo apt update && sudo apt -y upgrade"
+
+    # ADD DATE & TIME FOR COMMAND HISTORY
+    - name: Add HISTTIMEFORMAT to ~/.bashrc
+      lineinfile:
+        path: "{{ item.path }}"
+        insertafter: 'HISTCONTROL=ignoreboth'
+        line: 'HISTTIMEFORMAT="%F %T "'
+      with_items:
+        - {path: "/home/{{ ubuntu_username }}/.bashrc"}
+        - {path: "/home/{{ ubuntu_extra_user }}/.bashrc"}        
 
     # ADD ALIASES
     - name: Add favourite aliases to ~/.bashrc
@@ -67,15 +78,6 @@
       with_items:
         - {path: "/home/{{ ubuntu_username }}/.bashrc"}
         - {path: "/home/{{ ubuntu_extra_user }}/.bashrc"}            
-
-    # RELOAD BASHRC
-    - name: Source bashrc files to load new aliases
-      shell: |
-        source /home/{{ ubuntu_username }}/.bashrc
-        source /home/{{ ubuntu_extra_user }}/.bashrc
-        exit 0
-      args:
-        executable: /bin/bash
 
     # INSTALL / CONFIGURE / ENABLE UFW (uncomplicated firewall)
     - name: Install ufw
