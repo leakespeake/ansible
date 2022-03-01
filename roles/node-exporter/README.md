@@ -21,8 +21,8 @@ Node Exporter is installed to **/opt** since this is the ideal location for pre-
 ## Usage
 ```
 ssh-copy-id -i ~/.ssh/id_rsa.pub username@fqdn
-ansible -i $HOME/ansible/inventory.ini ubuntu_20_04_prd -m ping
-ansible-playbook -i $HOME/ansible/inventory.ini -u ubuntu --ask-become-pass node-exporter.yml
+ansible -i ~/ansible/inventory.ini ubuntu_20_04_prd -m ping
+ansible-playbook -i ~/ansible/inventory.ini -u ubuntu --ask-become-pass node-exporter.yml
 ```
 
 ## Troubleshooting

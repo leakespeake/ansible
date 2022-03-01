@@ -92,8 +92,8 @@ Create a new logical volume from the existing volume group, format, then mount i
 ## Usage
 ```
 ssh-copy-id -i ~/.ssh/id_rsa.pub username@fqdn
-ansible -i $HOME/ansible/inventory.ini ubuntu_20_04_prd -m ping
-ansible-playbook -i $HOME/ansible/inventory.ini -u ubuntu --ask-become-pass disk-config.yml
+ansible -i ~/ansible/inventory.ini ubuntu_20_04_prd -m ping
+ansible-playbook -i ~/ansible/inventory.ini -u ubuntu --ask-become-pass disk-config.yml
 ```
 
 ## Troubleshooting
