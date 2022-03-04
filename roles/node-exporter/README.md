@@ -19,6 +19,7 @@ The role has been fully tested on Ubuntu Server 20.04 LTS. Most of the tasks are
 Node Exporter is installed to **/opt** since this is the ideal location for pre-packaged third party software - although **/usr/local/bin** is still fine.
 
 ## Usage
+Normally loaded from **site.yml** - otherwise use the following;
 ```
 ssh-copy-id -i ~/.ssh/id_rsa.pub username@fqdn
 ansible -i ~/ansible/inventory.ini ubuntu_20_04_prd -m ping

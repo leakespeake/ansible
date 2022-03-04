@@ -1,0 +1,12 @@
+---
+- hosts: all # amend ansible groups via inventory.ini for centralized node targeting (across playbooks)
+  tasks:
+    - import_role:
+        name: disk-config
+
+    - import_role:
+        name: node-exporter
+
+- import_playbook: vm-extra-config.yml
+
+- import_playbook: vm-extra-security.yml

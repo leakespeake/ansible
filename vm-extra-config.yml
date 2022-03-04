@@ -5,9 +5,6 @@
   vars:
     ubuntu_username: ubuntu
     ubuntu_extra_user: nested
-    ufw_ssh_port: 22
-    ufw_docker_port: 2376
-    ufw_node_exporter_port: 9100
 
   tasks:
     # ADD 2ND USER - password hash generated via: mkpasswd --method=sha-512
@@ -20,14 +17,6 @@
           - sudo
           - docker
         state: present
-
-    # CRON JOB TO UPDATE SYSTEM - crontab -l / crontab -e  
-    - name: Cron jobs
-      cron:
-        name: Update packages
-        user: "{{ ubuntu_username }}"
-        special_time: monthly
-        job: "sudo apt update && sudo apt -y upgrade"
 
     # ADD DATE & TIME FOR COMMAND HISTORY
     - name: Add HISTTIMEFORMAT to ~/.bashrc
@@ -77,41 +66,4 @@
       with_items:
         - {path: "/home/{{ ubuntu_username }}/.bashrc"}
         - {path: "/home/{{ ubuntu_extra_user }}/.bashrc"}            
-
-    # INSTALL / CONFIGURE / ENABLE UFW (uncomplicated firewall)
-    - name: Install ufw
-      apt:
-        name: ufw
-        state: present
-
-    - name: Configure ufw defaults
-      ufw: direction={{ item.direction }} policy={{ item.policy }}
-      with_items:
-        - { direction: 'incoming', policy: 'deny' }
-        - { direction: 'outgoing', policy: 'allow' }
-      notify:
-        - Restart ufw
-
-    - name: Configure ufw rules
-      ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }}
-      with_items:
-        - { rule: 'allow', port: '{{ ufw_ssh_port }}', proto: 'tcp' }
-        - { rule: 'allow', port: '{{ ufw_docker_port }}', proto: 'tcp' }
-        - { rule: 'allow', port: '{{ ufw_node_exporter_port }}', proto: 'tcp' }
-      notify:
-        - Restart ufw
-
-    - name: Enable ufw logging
-      ufw: logging=on
-      notify:
-        - Restart ufw
-
-    - name: Enable ufw
-      ufw: 
-        state: enabled
-
-  handlers:
-  - name: Restart ufw
-    service:
-      name: ufw
-      state: restarted
+        

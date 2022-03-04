@@ -1,0 +1,56 @@
+---
+- name: Additional Ubuntu 20.04 security
+  hosts: all  # amend ansible groups via inventory.ini for centralized node targeting (across playbooks)
+  become: yes
+  vars:
+    ubuntu_username: ubuntu 
+    ufw_ssh_port: 22
+    ufw_docker_port: 2376
+    ufw_node_exporter_port: 9100
+
+  tasks:
+    # CRON JOB TO UPDATE SYSTEM - crontab -l / crontab -e  
+    - name: Cron jobs
+      cron:
+        name: Update packages
+        user: "{{ ubuntu_username }}"
+        special_time: monthly
+        job: "sudo apt update && sudo apt -y upgrade"
+
+    # INSTALL / CONFIGURE / ENABLE UFW (uncomplicated firewall)
+    - name: Install ufw
+      apt:
+        name: ufw
+        state: present
+
+    - name: Configure ufw defaults
+      ufw: direction={{ item.direction }} policy={{ item.policy }}
+      with_items:
+        - { direction: 'incoming', policy: 'deny' }
+        - { direction: 'outgoing', policy: 'allow' }
+      notify:
+        - Restart ufw
+
+    - name: Configure ufw rules
+      ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }}
+      with_items:
+        - { rule: 'allow', port: '{{ ufw_ssh_port }}', proto: 'tcp' }
+        - { rule: 'allow', port: '{{ ufw_docker_port }}', proto: 'tcp' }
+        - { rule: 'allow', port: '{{ ufw_node_exporter_port }}', proto: 'tcp' }
+      notify:
+        - Restart ufw
+
+    - name: Enable ufw logging
+      ufw: logging=on
+      notify:
+        - Restart ufw
+
+    - name: Enable ufw
+      ufw: 
+        state: enabled
+
+  handlers:
+  - name: Restart ufw
+    service:
+      name: ufw
+      state: restarted

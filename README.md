@@ -1,28 +1,8 @@
 ![ansible](https://user-images.githubusercontent.com/45919758/85199649-18b72000-b2e9-11ea-8725-df85186a6a57.png)
 
-Various Ansible roles and ad-hoc playbooks - mainly intended for fresh VM deployments via Terraform and ran in the following order (with confirmation checks for each);
-
-- ansible-playbook -i ~/ansible/inventory.ini -u ubuntu --ask-become-pass **disk-config.yml**
-```bash
-df -h
-lsblk -x KNAME -o KNAME,SIZE,TRAN,SUBSYSTEMS,FSTYPE,UUID,LABEL,MODEL,SERIAL
-pvs -o+pv_used ; vgs ; lvs
-cat /etc/fstab
+Various Ansible roles and ad-hoc playbooks - mainly intended for fresh VM deployments via Terraform - then ran via **site.yml** 
 ```
-- ansible-playbook -i ~/ansible/inventory.ini -u ubuntu --ask-become-pass **node-exporter.yml**
-```bash
-systemctl status node_exporter 
-curl http://localhost:9100/metrics
-```
-- ansible-playbook -i ~/ansible/inventory.ini -u ubuntu --ask-become-pass **vm-extra-config.yml**
-```bash
-cat ~/.bashrc
-source ~/.bashrc
-history
-path
-sudo ufw status verbose
-cut -d: -f1 /etc/passwd
-crontab -l
+ansible-playbook -i ~/ansible/inventory.ini -u ubuntu --ask-become-pass site.yml
 ```
 ---
 
@@ -60,18 +40,22 @@ Once a VM is deployed via Terraform, we should prep the comms from the Ansible C
 [5] docker -H 10.10.10.10:2376 ps -a
 ```
 Note its safer to ensure only the dedicated Ansible user account can read and write to the inventory.ini file.
+
 ---
 ## Playbook Organisation
-Common playbook structure includes some playbooks, an inventory, a directory for roles and another for variables. The playbooks may be ad-hoc or call an associated role. For the latter, I recommend matching the playbook name to the role name for clarity - i.e. **node-exporter.yml** and **/roles/node-exporter** 
+A common playbook structure includes some playbooks, an inventory, a directory for roles and others for variables - example below;
 
 ```bash
 ├── ansible.cfg
 ├── group_vars
 │   └── all
+├── host_vars
+│   └── all
 ├── inventory.ini
 ├── playbook1.yml
 ├── playbook2.yml
 ├── playbook3.yml
+├── site.yml
 └── roles
     ├── role1
     │   ├── README.md
@@ -93,7 +77,12 @@ Common playbook structure includes some playbooks, an inventory, a directory for
     ├── role2
     └── role3
 ```
-When you have a more complex, single playbook (maybe a large number of tasks with the YAML exceeding 100 lines), you can divide tasks into separate files. You can then link those files to the main playbook via either an **import** (static) or an **include** (dynamic) statement. Both allow you to refactor large lists of tasks into smaller logical groupings, aiding clarity,  organization and the overarching **DRY** principal in making code reusable.
+When loading a single role from a playbook, I recommend matching the playbook name to the role name for clarity - i.e. **node-exporter.yml** and **/roles/node-exporter** 
+
+When you have a more complex, single playbook - maybe a large number of tasks and plays, with the YAML exceeding 100 lines - you should divide them into separate playbooks. These can then be loaded via the master playbook (site.yaml) with either an **import_** (static) or an **include_** (dynamic) statement. Both statements allow you to refactor large lists of tasks into smaller logical groupings, aiding clarity, organization and the overarching **DRY** principal in making code reusable.
+
+### Site.yml
+This is the top-level, master playbook that is intended to be used across the entire server estate, or "site". Through a clever use of roles and clear, concise playbooks - we can employ the use of **import_** or **include_** statements to load and run them in the desired order - all from one playbook file!
 
 ### Import Playbook
 Playbooks can be included in other playbooks using the **import_playbook** directive - to run all named Ansible playbooks sequentially and back-to-back. Must be added in the top level of the playbook as you cannot use this action inside a play itself - i.e. place outside the **tasks:** section.
@@ -106,7 +95,6 @@ Playbooks can be included in other playbooks using the **import_playbook** direc
 - import_playbook: db.yml
 - import_playbook: 04-firewall.yml
 ```
-We could also use a dedicated file, say imports.yml for this purpose - essentially a file with just a list of plays to be executed sequentially.
 
 ### Import Tasks and Import Role
 The `import_tasks` directive, imports a list of tasks to be added to the current playbook for subsequent execution - example below;
@@ -398,6 +386,8 @@ You can perform the following to run additional pre-flight checks or produce ver
 
 ```
 ansible-inventory -i ~/ansible/inventory.ini --list
+ansible -i ~/ansible/inventory.ini all -m setup -a "filter=ansible_distribution"
+
 ansible-playbook -i ~/ansible/inventory.ini -u ubuntu --ask-become-pass my-playbook.yml --syntax-check
 ansible-playbook -i ~/ansible/inventory.ini -u ubuntu --ask-become-pass my-playbook.yml --check
 ansible-playbook -i ~/ansible/inventory.ini -u ubuntu --ask-become-pass my-playbook.yml --vvvv

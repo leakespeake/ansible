@@ -90,6 +90,7 @@ Create a new logical volume from the existing volume group, format, then mount i
 ```
 
 ## Usage
+Normally loaded from **site.yml** - otherwise use the following;
 ```
 ssh-copy-id -i ~/.ssh/id_rsa.pub username@fqdn
 ansible -i ~/ansible/inventory.ini ubuntu_20_04_prd -m ping
