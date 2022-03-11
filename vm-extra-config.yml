@@ -18,6 +18,13 @@
           - docker
         state: present
 
+    # ADD EXISTING PUBLIC SSH KEY FOR 2ND USER - negates manual use of ssh-copy-id utility
+    - name: Add public key to ~/.ssh/authorized_keys for secondary logon account
+      authorized_key:
+        user: "{{ ubuntu_extra_user }}"
+        state: present
+        key: "{{ lookup('file', '~/.ssh/ansible_id_rsa.pub') }}"
+
     # ADD DATE & TIME FOR COMMAND HISTORY
     - name: Add HISTTIMEFORMAT to ~/.bashrc
       lineinfile:
@@ -39,7 +46,7 @@
           alias path='echo $PATH | tr ":" "\n" | nl'
           alias mount='mount |column -t'
           alias ls='ls -la'
-          alias top='bashtop'
+          alias top='htop'
           alias df='pydf'
           alias du='ncdu'
           alias netstat='netstat -tulpn'

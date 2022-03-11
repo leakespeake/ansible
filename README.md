@@ -290,7 +290,9 @@ Ansible variables can be specified in multiple locations and have an order of pr
 
 - **roles/defaults/main.yml** - intended to be customized if required - easily overriden role variables, most commonly used to modify behavior (port number or default user). Use for variables that can be used in a play to configure the role or customize its behavior.
 
-- **group_vars/all** - used to set variables that will be used for every host that Ansible is ran against - use only for common defaults!
+- **host_vars/host1.example.com.yml** - applies to individual hosts stated in inventory.ini - superceeds anything set in group_vars (below).
+
+- **group_vars/group_example1.yml** - applies to individual groups stated in inventory.ini - you may want common variables set within `ubuntu.yml` for the `[ubuntu]` group and `centos.yml` for the `[centos]` group. You can also use `all.yml` to set variables used for every host that Ansible is ran against - use only for very common defaults.
 
 We use Jinja2 syntax (double curly braces) to reference variables within the playbook - YAML requires quotes to parse the whole expression - such as;
 ```yaml

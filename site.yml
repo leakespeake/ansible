@@ -8,5 +8,17 @@
         name: node-exporter
 
 - import_playbook: vm-extra-config.yml
+# CHECKS;
+# cut -d: -f1 /etc/passwd
+# ssh ubuntu_extra_user@server-01.example.com
+# cat ~/.bashrc
+# source ~/.bashrc
+# history
+# path
 
 - import_playbook: vm-extra-security.yml
+# CHECKS;
+# crontab -l
+# sudo ufw status verbose
+# ssh root@server-01.example.com
+# sudo fail2ban-client status

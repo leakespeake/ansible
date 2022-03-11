@@ -17,7 +17,7 @@
         special_time: monthly
         job: "sudo apt update && sudo apt -y upgrade"
 
-    # INSTALL / CONFIGURE / ENABLE UFW (uncomplicated firewall)
+    # UFW (uncomplicated firewall) - INSTALL, CONFIGURE & ENABLE
     - name: Install ufw
       apt:
         name: ufw
@@ -29,7 +29,7 @@
         - { direction: 'incoming', policy: 'deny' }
         - { direction: 'outgoing', policy: 'allow' }
       notify:
-        - Restart ufw
+        - restart ufw
 
     - name: Configure ufw rules
       ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }}
@@ -38,19 +38,72 @@
         - { rule: 'allow', port: '{{ ufw_docker_port }}', proto: 'tcp' }
         - { rule: 'allow', port: '{{ ufw_node_exporter_port }}', proto: 'tcp' }
       notify:
-        - Restart ufw
+        - restart ufw
 
     - name: Enable ufw logging
       ufw: logging=on
       notify:
-        - Restart ufw
+        - restart ufw
 
     - name: Enable ufw
       ufw: 
         state: enabled
 
+    # OPENSSH - HARDEN CONFIGURATION
+    - name: Harden sshd configuration
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: present
+        validate: 'sshd -t -f %s'
+      with_items:
+        - regexp: "^PasswordAuthentication\ "
+          line: "PasswordAuthentication no"
+        - regexp: "^PermitRootLogin\ "
+          line: "PermitRootLogin no"
+        - regexp: "^#PermitEmptyPasswords\ "
+          line: "PermitEmptyPasswords no"
+      notify:
+        - restart sshd
+
+    # FAIL2BAN - INSTALL & CONFIGURE - (defaults to 5 ssh logon attempts prior to 10 minute ban)
+    - name: Install fail2ban
+      apt: 
+        name: fail2ban
+        state: latest
+        update_cache: yes
+
+    - name: Copy default config to .local file for fail2ban to read as master
+      copy:
+        src: /etc/fail2ban/jail.conf
+        dest: /etc/fail2ban/jail.local
+        remote_src: yes
+        force: no
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Configure jail.local
+      lineinfile:
+        path: /etc/fail2ban/jail.local
+        regexp: "^#ignoreip = 127.0.0.1/8 ::1"
+        line: "ignoreip = 127.0.0.1/8 ::1 192.168.0.0/24"
+      notify:
+        - restart fail2ban
+
   handlers:
-  - name: Restart ufw
+  - name: restart ufw
     service:
       name: ufw
+      state: restarted
+
+  - name: restart sshd
+    service:
+      name: sshd
+      state: restarted
+
+  - name: restart fail2ban
+    service:
+      name: fail2ban
       state: restarted
