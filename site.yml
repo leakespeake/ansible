@@ -19,6 +19,8 @@
 - import_playbook: vm-extra-security.yml
 # CHECKS;
 # crontab -l
+# cat /etc/pam.d/common-password
+# sudo passwd ubuntu_extra_user
 # sudo ufw status verbose
 # ssh root@server-01.example.com
 # sudo fail2ban-client status

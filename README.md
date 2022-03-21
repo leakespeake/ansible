@@ -394,3 +394,4 @@ ansible-playbook -i ~/ansible/inventory.ini -u ubuntu --ask-become-pass my-playb
 ansible-playbook -i ~/ansible/inventory.ini -u ubuntu --ask-become-pass my-playbook.yml --check
 ansible-playbook -i ~/ansible/inventory.ini -u ubuntu --ask-become-pass my-playbook.yml --vvvv
 ```
+You may also want to test any `regexp:` values (used with modules such as **lineinfile**) via https://regex101.com/
