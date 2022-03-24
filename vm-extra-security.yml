@@ -32,6 +32,26 @@
         state: present
         backup: yes
 
+    # CLAMAV - INSTALL & CONFIGURE - clamscan [options] [files-or-directories]
+    - name: Install ClamAV antivirus toolkit
+      apt:
+        name: clamav
+        state: present   
+
+    - name: Stop the clamav-freshclam service
+      systemd:
+        name: clamav-freshclam
+        state: stopped
+
+    - name: Update the ClamAV signature database    
+      shell:  
+        "freshclam"
+
+    - name: Start the clamav-freshclam service
+      systemd:
+        name: clamav-freshclam
+        state: started 
+
     # UFW (uncomplicated firewall) - INSTALL, CONFIGURE & ENABLE (iptables front-end)
     - name: Install ufw
       apt:
