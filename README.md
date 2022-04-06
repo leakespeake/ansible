@@ -288,7 +288,11 @@ Ansible variables can be specified in multiple locations and have an order of pr
 
 - **roles/vars/main.yml** - not intended to be modified - static role variables such as a set list of packages. The intent of these variables is that they are used by the internal functioning of the role. 
 
-- **roles/defaults/main.yml** - intended to be customized if required - easily overriden role variables, most commonly used to modify behavior (port number or default user). Use for variables that can be used in a play to configure the role or customize its behavior.
+- **roles/defaults/main.yml** - intended to be customized if required - easily overriden role variables, most commonly used to modify behavior (port number or default user). Use for variables that can be used in a play to configure the role or customize its behavior. Commonly overridden via playbook `vars:` - example below;
+```
+     vars:
+        http_port: 8080
+```
 
 - **host_vars/host1.example.com.yml** - applies to individual hosts stated in inventory.ini - superceeds anything set in group_vars (below).
 

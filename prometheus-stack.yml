@@ -1,0 +1,12 @@
+---
+- name: Deploy and configure Prometheus
+  hosts: all # amend ansible groups via inventory.ini for centralized node targeting (across playbooks)
+  become: yes
+  tasks:
+    - name: Use Ansible Galaxy Prometheus role
+      import_role:
+        name: cloudalchemy.prometheus
+  vars:
+    prometheus_version: 2.34.0
+    prometheus_storage_retention: "15d"
+    prometheus_web_external_url: "http://{{ ansible_host }}:9090"
