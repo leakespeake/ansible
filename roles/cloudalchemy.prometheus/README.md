@@ -8,6 +8,8 @@ https://prometheus.io/docs/introduction/overview/
 
 This is the first part of the Prometheus stack, the intention being to also install and configure Grafana and AlertManager for a complete monitoring, visualization and alerting solution. I will utilize the `import_role` directives via a **prometheus-stack.yml** file to load and run them in the correct order. 
 
+I have chosen Ansible to deploy and configure this solution, rather than `docker-compose`, as I have no requirement for data persistence via Docker volumes.
+
 
 ## Description
 
@@ -26,6 +28,8 @@ Firstly, ensure Ansible comms are setup and functioning correctly between the Co
 cd ~/ansible/
 ansible-galaxy role install -p roles/ cloudalchemy.prometheus
 touch prometheus-stack.yml
+
+ansible-playbook -i ~/ansible/inventory.ini prometheus-stack.yml
 ```
 
 ## Target and Scrape Configuration
@@ -61,7 +65,7 @@ The Ubuntu Server 20.04 LTS VMs are preconfigured and locked down via Packer and
   ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }}
   with_items:
     - { rule: 'allow', port: 9090, proto: 'tcp' }
-  when: ansible_distribution == Ubuntu  
+  when: ansible_facts['distribution'] == 'Ubuntu'
   notify:
     - restart ufw
 ```
@@ -76,7 +80,7 @@ Also note that Prometheus did not have any built-in security features in the pas
 
 ## Troubleshooting
 ```
-ansible-playbook -i ~/ansible/inventory.ini prometheus.yml --syntax-check
-ansible-playbook -i ~/ansible/inventory.ini prometheus.yml --check 
-ansible-playbook -i ~/ansible/inventory.ini prometheus.yml --vvvv
+ansible-playbook -i ~/ansible/inventory.ini prometheus-stack.yml --syntax-check
+ansible-playbook -i ~/ansible/inventory.ini prometheus-stack.yml --check 
+ansible-playbook -i ~/ansible/inventory.ini prometheus-stack.yml --vvvv
 ```
