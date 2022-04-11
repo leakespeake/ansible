@@ -1,5 +1,3 @@
-<p><img src="https://grafana.com/blog/assets/img/blog/timeshift/grafana_release_icon.png" alt="grafana logo" title="grafana" align="right" height="60" /></p>
-
 # Ansible Role: Grafana
 
 Grafana is an open-source platform for monitoring and observability. It allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, and share dashboards to foster a data-driven culture.
@@ -54,7 +52,7 @@ grafana_dashboards:
 # Uploads to /var/lib/grafana/dashboards on Prometheus host
 grafana_dashboards_dir: "/home/$USER/ansible/roles/cloudalchemy.grafana/files/json-dashboards"
 ```
-The last option requires a manual directory creation on your local Ansible Control Node via `mkdir ~/ansible/roles/cloudalchemy.grafana/files/json-dashboards`
+The last option requires a manual directory creation on your local Ansible Control Node via `mkdir ~/ansible/roles/cloudalchemy.grafana/files/json-dashboards` - you may want to add a `.gitkeep` file here to create the directory placeholder on first commit, in the absence of any custom dashboards.
 
 
 ## Role Variables
