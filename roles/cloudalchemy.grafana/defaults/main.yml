@@ -200,11 +200,11 @@ grafana_dashboards:
   - dashboard_id: '1860'           # Node Exporter Full
     revision_id: '26'
     datasource: 'Prometheus'    
+  - dashboard_id: '11600'          # Docker Container
+    revision_id: '1'
+    datasource: 'Prometheus'    
   # - dashboard_id: '358'          # Prometheus Stats
   #   revision_id: '1'
-  #   datasource: 'Prometheus'
-  # - dashboard_id: '4271'         # Docker and system monitoring
-  #   revision_id: '4'
   #   datasource: 'Prometheus'
 
 # Local directory on Ansible Control Node containing dashboards in json format

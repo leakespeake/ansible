@@ -67,6 +67,7 @@ prometheus_targets:
   php-ipam-prd-01:
   - targets:
     - php-ipam-prd-01.int.leakespeake.com:9100
+    - php-ipam-prd-01.int.leakespeake.com:8080
     labels:
       env: prod        
 
