@@ -1,11 +1,20 @@
 ---
 - hosts: all # amend ansible groups via inventory.ini for centralized node targeting (across playbooks)
+  become: true
   tasks:
-    - import_role:
-        name: disk-config
+- import_playbook: disk-config.yml
+# CHECKS;
+# df -h
+# parted -l
+# lsblk -x KNAME -o KNAME,SIZE,TRAN,SUBSYSTEMS,FSTYPE,UUID,LABEL,MODEL,SERIAL
+# sudo pvs ; sudo vgs ; sudo lvs
+# blkid
+# cat /etc/fstab
 
-    - import_role:
-        name: node-exporter
+- import_playbook: node-exporter.yml
+# CHECKS;
+# systemctl status node_exporter 
+# curl http://localhost:9100/metrics
 
 - import_playbook: vm-extra-config.yml
 # CHECKS;

@@ -1,5 +1,5 @@
 ---
-- name: Additional Ubuntu 20.04 security
+- name: Additional Ubuntu 22.04 security
   hosts: all  # amend ansible groups via inventory.ini for centralized node targeting (across playbooks)
   become: yes
   vars:

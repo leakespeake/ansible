@@ -1,8 +1,8 @@
 ![ansible](https://user-images.githubusercontent.com/45919758/85199649-18b72000-b2e9-11ea-8725-df85186a6a57.png)
 
-Various Ansible roles and ad-hoc playbooks - mainly intended for fresh VM deployments via Terraform - then ran via **site.yml** 
+Various Ansible roles and ad-hoc playbooks - mainly intended for fresh VM deployments via Terraform - then ran via **site.yml** master playbook
 ```
-ansible-playbook -i ~/ansible/inventory.ini -u ubuntu --ask-become-pass site.yml
+ansible-playbook -i ~/ansible/inventory.ini -u ubuntu site.yml
 ```
 ---
 

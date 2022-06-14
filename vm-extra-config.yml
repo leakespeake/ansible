@@ -1,5 +1,5 @@
 ---
-- name: Additional Ubuntu 20.04 configuration
+- name: Additional Ubuntu 22.04 configuration
   hosts: all  # amend ansible groups via inventory.ini for centralized node targeting (across playbooks)
   become: yes
   vars:
@@ -49,7 +49,7 @@
           alias top='htop'
           alias df='pydf'
           alias du='ncdu'
-          alias netstat='netstat -tulpn'
+          alias ss='ss -tulpn'
           alias hs='history | grep'
           alias myip='curl ipinfo.io/ip'
       with_items:
