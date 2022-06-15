@@ -69,7 +69,14 @@ prometheus_targets:
     - php-ipam-prd-01.int.leakespeake.com:9100
     - php-ipam-prd-01.int.leakespeake.com:8080
     labels:
-      env: prod        
+      env: prod    
+
+  jenkins-prd-01:
+  - targets:
+    - jenkins-prd-01.int.leakespeake.com:9100
+    - jenkins-prd-01.int.leakespeake.com:8080
+    labels:
+      env: prod           
 
 # Scrape configs stated here must be mapped to 'prometheus_targets' (above)
 prometheus_scrape_configs:
@@ -88,6 +95,11 @@ prometheus_scrape_configs:
     file_sd_configs:
       - files:
           - "{{ prometheus_config_dir }}/file_sd/php-ipam-prd-01.yml"    
+
+  - job_name: "jenkins-prd-01"
+    file_sd_configs:
+      - files:
+          - "{{ prometheus_config_dir }}/file_sd/jenkins-prd-01.yml"              
 
 # Alternative config file name, searched in ansible templates path.
 prometheus_config_file: 'prometheus.yml.j2'
