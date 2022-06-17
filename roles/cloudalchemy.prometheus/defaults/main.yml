@@ -125,6 +125,7 @@ prometheus_alert_rules:
     for: 5m
     labels:
       severity: critical
+      email: true
     annotations:
       description: '{% raw %}{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 minutes.{% endraw %}'
       summary: '{% raw %}Instance {{ $labels.instance }} down{% endraw %}'

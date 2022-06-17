@@ -1,7 +1,7 @@
 ---
 - name: Deploy and configure a Prometheus stack
   hosts: all # amend ansible groups via inventory.ini for centralized node targeting (across playbooks)
-  become: yes
+  become: true
   tasks:
     - name: Use Ansible Galaxy Prometheus role
       import_role:
@@ -10,9 +10,39 @@
         prometheus_version: latest
         prometheus_storage_retention: "15d"
         prometheus_web_external_url: "http://{{ ansible_host }}:9090"
+        prometheus_alertmanager_config:
+          - scheme: http
+            static_configs:
+              - targets: ["localhost:9093"]
 
     - name: Use Ansible Galaxy Grafana role
       import_role:
         name: cloudalchemy.grafana
       vars:
         grafana_version: latest
+
+    - name: Use Ansible Galaxy Alertmanager role
+      import_role:
+        name: cloudalchemy.alertmanager
+      vars:
+        alertmanager_version: latest
+        alertmanager_receivers:
+          - name: email
+            email_configs:  
+              - to: REDACTED@hotmail.com
+                from: REDACTED@hotmail.com
+                smarthost: smtp-mail.outlook.com:587
+                auth_username: REDACTED@hotmail.com
+                auth_identity: REDACTED@hotmail.com
+                auth_password: REDACTED   # use app password
+        alertmanager_route:
+          group_by: ['alertname', 'instance']
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 3h
+          receiver: email
+          routes:
+          - receiver: email
+            matchers:
+              - severity = critical
+              - email = true
