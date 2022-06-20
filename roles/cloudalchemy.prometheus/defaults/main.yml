@@ -58,18 +58,13 @@ prometheus_external_labels:
 
 # Targets stated here must be mapped to 'prometheus_scrape_configs' (below)
 prometheus_targets:
-  node: # Base file name located in "{{ prometheus_config_dir }}/file_sd/node.yml"
-  - targets:
-      - localhost:9100  # This is the targets section in file_sd format
-    labels:
-      env: prod
 
-  php-ipam-prd-01:
-  - targets:
+  php-ipam-prd-01:                                  # Base file name located in "{{ prometheus_config_dir }}/file_sd/node.yml"
+  - targets:                                        # Associated with the targets section in file_sd format
     - php-ipam-prd-01.int.leakespeake.com:9100
     - php-ipam-prd-01.int.leakespeake.com:8080
-    labels:
-      env: prod    
+    labels:                                         # Additional labels for filtering with PromQL or Alertmanager
+      env: prod
 
   jenkins-prd-01:
   - targets:
@@ -80,16 +75,13 @@ prometheus_targets:
 
 # Scrape configs stated here must be mapped to 'prometheus_targets' (above)
 prometheus_scrape_configs:
-  - job_name: "prometheus"
+
+  - job_name: "prometheus-prd-01"
     metrics_path: "{{ prometheus_metrics_path }}"
     static_configs:
       - targets:
           - "{{ ansible_fqdn | default(ansible_host) | default('localhost') }}:9090" # Custom scrape job, here using `static_config`
-
-  - job_name: "node"
-    file_sd_configs:
-      - files:
-          - "{{ prometheus_config_dir }}/file_sd/node.yml" # Loads file created from 'prometheus_targets' in prometheus.yml          
+          - "{{ ansible_fqdn | default(ansible_host) | default('localhost') }}:9100"   
 
   - job_name: "php-ipam-prd-01"
     file_sd_configs:
