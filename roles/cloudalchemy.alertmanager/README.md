@@ -43,10 +43,11 @@ Also note **defaults/main.yml** in the Prometheus role will conatin the `prometh
 
 The Alertmanager configuration is handled by the code blocks within **defaults/main.yml** although see **prometheus-stack.yml** as we will overide many of them here with the salient parts such as;
 
-alertmanager_receivers: (the notification receiver configuration - in this case the smtp smarthost and email credentials for authentication)
-alertmanager_route: (define the notification receiver to use and the alerting parameters under which it will be sent)
+**alertmanager_receivers:** (the notification receiver configuration - in this case the smtp smarthost and email credentials for authentication)
 
-When a rule threshold is breached, Prometheus will register the alert in a "pending" state before moving to a "firing" state. At this point the alert will be sent to Alertmanager and appear there with its associated labels. Alertmanager will then pass the alert to the configured receiver via the specified route.
+**alertmanager_route:** (define the notification receiver to use and the alerting parameters under which it will be sent)
+
+When a rule threshold is breached, Prometheus will register the alert in a "**pending**" state before moving to a "**firing**" state. At this point the alert will be sent to Alertmanager and appear there with its associated labels. Alertmanager will then pass the alert to the configured receiver via the specified route.
 
 Since this particular setup uses email and associated authentication creds, it isn't recommended you use your personal password for security. Instead you'll need an app password created for this use.
 
@@ -61,7 +62,9 @@ All variables which can be overridden are stored in **defaults/main.yml** and ex
 Recommended to backup first `cp main.yml main.yml.bak` - notable changes made via our prometheus-stack.yml playbook vars:
 
 alertmanager_version: latest
+
 alertmanager_receivers:
+
 alertmanager_route:
 
 ## Additional Code
