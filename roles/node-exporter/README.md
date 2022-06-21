@@ -1,6 +1,6 @@
 # Prometheus Node Exporter role
 
-The Prometheus Node Exporter exposes a variety of hardware and kernel related metrics that Prometheus can scrape from.
+The Prometheus Node Exporter exposes a variety of hardware and kernel related metrics that Prometheus can scrape from. It's not well suited with Docker, so we'll utilize Ansible instead.
 
 The purpose of this Ansible role is to automate the install of the Prometheus Node Exporter. The skeleton directory structure for this role was created with Ansible Galaxy;
 
