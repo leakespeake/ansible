@@ -9,6 +9,10 @@
     ufw_node_exporter_port: 9100
 
   tasks:
+    - name: Update package repositories
+      apt:
+        update_cache: yes
+        
     # CRON JOB TO UPDATE REPOS & PACKAGES - crontab -l / crontab -e  
     - name: Cron jobs
       cron:
