@@ -103,6 +103,16 @@
   notify:
     - restart prometheus
 
+- name: copy web configuration for TLS encryption
+  copy:
+    src: web-config.yml
+    dest: "{{ prometheus_config_dir }}"
+    owner: root
+    group: prometheus
+    mode: 0644
+  notify:
+    - restart prometheus
+
 - name: create systemd service unit
   template:
     src: prometheus.service.j2

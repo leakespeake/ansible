@@ -65,7 +65,7 @@ Recommended to backup first `cp main.yml main.yml.bak` - notable changes made vi
 
 
 
-## Additional Code
+## Additional Code - UFW
 
 The Ubuntu Server 20.04 LTS VMs are preconfigured and locked down via Packer and Ansible, so will require the following additional code to reach the web interface.
 
@@ -88,9 +88,25 @@ The Ubuntu Server 20.04 LTS VMs are preconfigured and locked down via Packer and
     state: restarted
 ```
 
+## Additional Code - TLS 
+
+Adapt the `grafana_datasources:` block to ensure we connect to our Prometheus datasource via https;
+
+`defaults/main.yml`
+```
+url: "https://{{ ansible_host }}:9090"
+    jsonData:
+      tlsAuth: false
+      tlsAuthWithCACert: false
+      tlsSkipVerify: true
+```
+After re-running `prometheus-stack.yml` we can test via the `Test` button on the datasources page in the UI.
+
+
 ## Troubleshooting
 ```
 ansible-playbook -i ~/ansible/inventory.ini prometheus-stack.yml --syntax-check
 ansible-playbook -i ~/ansible/inventory.ini prometheus-stack.yml --check 
 ansible-playbook -i ~/ansible/inventory.ini prometheus-stack.yml --vvvv
+sudo ufw status numbered
 ```
