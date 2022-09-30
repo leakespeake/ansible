@@ -23,6 +23,7 @@
       - prometheus_config_flags_extra['storage.tsdb.path'] is not defined
       - prometheus_config_flags_extra['storage.local.path'] is not defined
       - prometheus_config_flags_extra['web.listen-address'] is not defined
+      - prometheus_config_flags_extra['web.config.file'] is not defined
       - prometheus_config_flags_extra['web.external-url'] is not defined
     msg: "Detected duplicate configuration entry. Please check your ansible variables and role README.md."
 
@@ -47,6 +48,7 @@
     - 'storage.local.path'
     - 'config.file'
     - 'web.listen-address'
+    - 'web.config.file'
     - 'web.external-url'
   when: item in prometheus_config_flags_extra.keys()
 

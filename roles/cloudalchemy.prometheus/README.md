@@ -54,7 +54,7 @@ Recommended to backup first `cp main.yml main.yml.bak` - notable changes made vi
 - prometheus_web_external_url: "http://{{ ansible_host }}:9090" (add a fully qualified URL)
 
 
-## Additional Code
+## Additional Code - UFW
 
 The Ubuntu Server 20.04 LTS VMs are preconfigured and locked down via Packer and Ansible, so will require the following additional code to reach the web interface.
 
@@ -78,9 +78,50 @@ The Ubuntu Server 20.04 LTS VMs are preconfigured and locked down via Packer and
 ```
 Also note that Prometheus did not have any built-in security features in the past, however, basic authentication and TLS were added in version 2.24.0 to secure the API and UI endpoints - more information at https://prometheus.io/docs/guides/basic-auth/
 
+## Additional Code - TLS 
+
+Prometheus supports Transport Layer Security (TLS) encryption for connections to Prometheus instances. The following assumes you already have a full chain certificate and private key files. Couple of mandatory manual steps involved here;
+
+- create a **files/** folder in the Prometheus role directory to use with the Ansible **copy** feature (Ansible will automatically use `files/` to look for filenames stated with `src:`)
+- create **web-config.yml** inside the `files/` folder - with this configuration, Prometheus will serve all its endpoints behind TLS
+
+Then adapt the existing code to include;
+
+`prometheus-stack.yml`
+```
+prometheus_web_external_url: "https://{{ ansible_host }}:9090"
+```
+`defaults/main.yml`
+```
+prometheus_web_config_file: "{{ prometheus_config_dir }}/web-config.yml"
+```
+`templates/prometheus.service.j2`
+```
+--web.config.file={{ prometheus_web_config_file }} \
+```
+`tasks/preflight.yml`
+```
+- prometheus_config_flags_extra['web.config.file'] is not defined
+- 'web.config.file'
+```
+`tasks/install.yml`
+```
+- name: copy web configuration for TLS encryption
+  copy:
+    src: web-config.yml
+    dest: "{{ prometheus_config_dir }}"
+    owner: root
+    group: prometheus
+    mode: 0644
+  notify:
+    - restart prometheus
+```
+After re-running `prometheus-stack.yml` we can test via `curl -v https://localhost:9090`
+
 ## Troubleshooting
 ```
 ansible-playbook -i ~/ansible/inventory.ini prometheus-stack.yml --syntax-check
 ansible-playbook -i ~/ansible/inventory.ini prometheus-stack.yml --check 
 ansible-playbook -i ~/ansible/inventory.ini prometheus-stack.yml --vvvv
+sudo ufw status numbered
 ```

@@ -9,7 +9,7 @@
       vars:
         prometheus_version: latest
         prometheus_storage_retention: "15d"
-        prometheus_web_external_url: "http://{{ ansible_host }}:9090"
+        prometheus_web_external_url: "https://{{ ansible_host }}:9090"
         prometheus_alertmanager_config:
           - scheme: http
             static_configs:

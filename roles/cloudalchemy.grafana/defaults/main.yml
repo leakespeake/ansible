@@ -225,16 +225,16 @@ grafana_datasources:
   - name: "Prometheus"
     type: "prometheus"
     access: "proxy"
-    url: "http://{{ ansible_host }}:9090"
+    url: "https://{{ ansible_host }}:9090"
     basicAuth: false
 #    basicAuth: true
 #    basicAuthUser: "admin"
 #    basicAuthPassword: "password"
 #    isDefault: true
-#    jsonData:
-#      tlsAuth: false
-#      tlsAuthWithCACert: false
-#      tlsSkipVerify: true
+    jsonData:
+      tlsAuth: false
+      tlsAuthWithCACert: false
+      tlsSkipVerify: true
 
 # API keys to configure
 grafana_api_keys: []
