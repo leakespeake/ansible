@@ -80,10 +80,11 @@ Also note that Prometheus did not have any built-in security features in the pas
 
 ## Additional Code - TLS 
 
-Prometheus supports Transport Layer Security (TLS) encryption for connections to Prometheus instances. The following assumes you already have a full chain certificate and private key files. Couple of mandatory manual steps involved here;
+Prometheus supports Transport Layer Security (TLS) encryption for connections to Prometheus instances. The following assumes you already have a full chain certificate and private key files. Some mandatory manual steps involved here;
 
 - create a **files/** folder in the Prometheus role directory to use with the Ansible **copy** feature (Ansible will automatically use `files/` to look for filenames stated with `src:`)
 - create **web-config.yml** inside the `files/` folder - with this configuration, Prometheus will serve all its endpoints behind TLS
+- copy your full chain certificate and private key files into the `files/` folder to use with the Ansible **copy** feature
 
 Then adapt the existing code to include;
 
@@ -115,6 +116,19 @@ prometheus_web_config_file: "{{ prometheus_config_dir }}/web-config.yml"
     mode: 0644
   notify:
     - restart prometheus
+
+- name: copy PEM files for TLS encryption
+  copy:
+    src: "{{ item }}"
+    dest: "{{ prometheus_config_dir }}"
+    owner: root
+    group: prometheus
+    mode: 0644
+  with_items:
+    - fullchain.pem
+    - privkey.pem
+  notify:
+    - restart prometheus        
 ```
 After re-running `prometheus-stack.yml` we can test via `curl -v https://localhost:9090`
 
