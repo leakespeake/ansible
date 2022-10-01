@@ -113,6 +113,19 @@
   notify:
     - restart prometheus
 
+- name: copy PEM files for TLS encryption
+  copy:
+    src: "{{ item }}"
+    dest: "{{ prometheus_config_dir }}"
+    owner: root
+    group: prometheus
+    mode: 0440
+  with_items:
+    - fullchain.pem
+    - privkey.pem
+  notify:
+    - restart prometheus     
+
 - name: create systemd service unit
   template:
     src: prometheus.service.j2

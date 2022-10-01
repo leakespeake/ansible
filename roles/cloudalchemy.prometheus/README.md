@@ -123,12 +123,12 @@ prometheus_web_config_file: "{{ prometheus_config_dir }}/web-config.yml"
     dest: "{{ prometheus_config_dir }}"
     owner: root
     group: prometheus
-    mode: 0644
+    mode: 0440
   with_items:
     - fullchain.pem
     - privkey.pem
   notify:
-    - restart prometheus        
+    - restart prometheus         
 ```
 After re-running `prometheus-stack.yml` we can test via `curl -v https://localhost:9090`
 
