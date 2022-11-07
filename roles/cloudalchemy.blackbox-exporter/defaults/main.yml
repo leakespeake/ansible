@@ -1,0 +1,26 @@
+---
+blackbox_exporter_version: 0.18.0
+
+blackbox_exporter_web_listen_address: "0.0.0.0:9115"
+
+# to use the **debug=true** cli option
+blackbox_exporter_cli_flags:
+  log.level: "debug"
+
+blackbox_exporter_configuration_modules:
+  http_2xx:
+    prober: http
+    timeout: 5s
+    http:
+      preferred_ip_protocol: "ip4"
+      ip_protocol_fallback: false
+      method: GET
+      valid_status_codes:
+        - 200
+        - 403          
+      valid_http_versions:
+        - "HTTP/1.1"
+        - "HTTP/2.0"    
+      tls_config:
+        insecure_skip_verify: true
+

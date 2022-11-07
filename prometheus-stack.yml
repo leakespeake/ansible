@@ -46,3 +46,9 @@
             matchers:
               - severity = critical
               - email = true
+
+    - name: Use Ansible Galaxy Blackbox Exporter role
+      import_role:
+        name: cloudalchemy.blackbox-exporter
+      vars:
+        blackbox_exporter_version: 0.22.0              
