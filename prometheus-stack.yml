@@ -1,6 +1,6 @@
 ---
 - name: Deploy and configure a Prometheus stack
-  hosts: all # amend ansible groups via inventory.ini for centralized node targeting (across playbooks)
+  hosts: prometheus # amend ansible groups via inventory.ini for centralized node targeting (across playbooks)
   become: true
   tasks:
     - name: Use Ansible Galaxy Prometheus role

@@ -132,6 +132,19 @@ prometheus_web_config_file: "{{ prometheus_config_dir }}/web-config.yml"
 ```
 After re-running `prometheus-stack.yml` we can test via `curl -v https://localhost:9090`
 
+## Custom Alerting Rules
+Any custom alerting rules can be placed within `prometheus/rules/` as per defaults/main.yml code below;
+
+```
+prometheus_alert_rules_files:
+  - prometheus/rules/*.rules
+```
+You must manually create this directory first in the Prometheus role main directory and place any `.rules` files there for copying to Prometheus upon the next play.
+
+See these awesome Prometheus alerts to tailor your additional `.rules` files for your own environment;
+
+https://awesome-prometheus-alerts.grep.to/rules.html
+
 ## Troubleshooting
 ```
 ansible-playbook -i ~/ansible/inventory.ini prometheus-stack.yml --syntax-check
