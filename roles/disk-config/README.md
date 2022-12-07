@@ -11,7 +11,7 @@ The purpose of this Ansible role is to leverage LVM2 to automate the partitionin
 
 Many options are available with LVM, such as creating a new volume group with new logical volumes or adding to and extending existing ones.
 
-![Screenshot](https://github.com/leakespeake/ansible/blob/master/LVM.jpg)
+![Screenshot](https://github.com/leakespeake/ansible/blob/master/roles/disk-config/LVM.jpg)
 
 The skeleton directory structure for this role was created with Ansible Galaxy;
 
