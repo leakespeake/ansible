@@ -1,0 +1,76 @@
+---
+- name: Play 1 (fetch) - replace SSL certificate for Jenkins
+  hosts: jenkins        # ansible -i ~/ansible/inventory.ini jenkins -m ping
+  become: true
+  tasks:
+    - name: Copy renewed SSL cert with appropriate permissions (docker-compose)
+      copy:
+        src: ~/ansible/fetched/certbot/int.leakespeake.com.pem
+        dest: /home/ubuntu/docker-compose/jenkins/ssl/
+
+    - name: Copy renewed SSL cert with appropriate permissions (host vm docker volume)
+      copy:
+        src: ~/ansible/fetched/certbot/int.leakespeake.com.pem
+        dest: /var/lib/docker/volumes/jenkins_jenkins-haproxy-ssl/_data    
+
+    - name: Reload reverse proxy for Jenkins
+      shell: |
+        docker stop php-ipam_phpipam-haproxy_1
+        docker rm php-ipam_phpipam-haproxy_1
+        docker-compose up -d
+      args:
+        chdir: /home/ubuntu/docker-compose/jenkins
+        executable: /bin/bash
+
+- name: Play 2 (fetch) - replace SSL certificate for Prometheus
+  hosts: localhost      # ansible localhost -m ping -vvv
+  connection: local
+  tasks:  
+    - name: Find renewed SSL certs
+      find:
+        paths: ~/ansible/fetched/certbot/
+        patterns: 'fullchain*,privkey*'
+      register: files_to_copy
+
+    - name: Remove old Prometheus SSL certs
+      shell: rm -f ~/ansible/roles/cloudalchemy.prometheus/files/*.pem
+      args:
+        executable: /bin/bash       
+
+    # .pem file names increment at each renewal - manual name changes needed atm in /files/webconfig.yml and tasks/install.yml
+    - name: Copy renewed SSL certs to role files/ directory for upload
+      copy:
+        src: "{{ item.path }}"
+        dest: ~/ansible/roles/cloudalchemy.prometheus/files
+        force: false
+      with_items: "{{ files_to_copy.files }}"
+
+    - name: Run the Prometheus playbook to upload new SSL certs
+      shell:
+        ansible-playbook -i ~/ansible/inventory.ini prometheus-stack.yml
+      args:
+        executable: /bin/bash
+        chdir: ~/ansible
+
+- name: Play 3 (fetch) - replace SSL certificate for PHP IPAM
+  hosts: php_ipam       # ansible -i ~/ansible/inventory.ini php_ipam -m ping
+  become: true
+  tasks:  
+    - name: Copy renewed SSL cert with appropriate permissions (docker-compose)
+      copy:
+        src: ~/ansible/fetched/certbot/int.leakespeake.com.pem
+        dest: /home/ubuntu/docker-compose/php-ipam
+
+    - name: Copy renewed SSL cert with appropriate permissions (host vm docker volume)
+      copy:
+        src: ~/ansible/fetched/certbot/int.leakespeake.com.pem
+        dest: /var/lib/docker/volumes/php-ipam_phpipam-haproxy-ssl/_data         
+
+    - name: Reload reverse proxy for PHP-IPAM
+      shell: |
+        docker stop php-ipam_phpipam-haproxy_1
+        docker rm php-ipam_phpipam-haproxy_1
+        docker-compose up -d
+      args:
+        chdir: /home/ubuntu/docker-compose/php-ipam
+        executable: /bin/bash

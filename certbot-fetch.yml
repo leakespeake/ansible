@@ -1,0 +1,49 @@
+---
+- name: Play 1 (copy) - remove previously fetched SSL certs (local)
+  hosts: localhost      # ansible localhost -m ping -vvv
+  connection: local
+  tasks:
+    - name: Remove previously fetched SSL certs
+      shell: rm -f ~/ansible/fetched/certbot/*.pem
+      args:
+        executable: /bin/bash  
+
+- name: Play 2 (copy) - find and fetch renewed SSL certificates (remote)
+  hosts: certbot_host   # ansible -i ~/ansible/inventory.ini certbot_host -m ping
+  become: true
+  tasks:
+    - name: Find renewed SSL certs
+      find: 
+        paths: /home/ubuntu/letsencrypt/config/archive/int.leakespeake.com
+        patterns: 'fullchain*,privkey*'
+        age: -30d
+        recurse: no
+      register: files_to_fetch
+
+    - name: Fetch renewed SSL certs from Certbot node
+      fetch:
+        src: "{{ item.path }}"
+        dest: ~/ansible/fetched/certbot/
+        flat: yes
+      with_items: "{{ files_to_fetch.files }}"
+
+- name: Play 3 (copy) - concatenate renewed SSL certs (local)
+  hosts: localhost      # ansible localhost -m ping -vvv
+  connection: local
+  tasks:
+    - name: Concatenate renewed SSL certs
+      shell: cat ~/ansible/fetched/certbot/*.pem > ~/ansible/fetched/certbot/int.leakespeake.com.pem
+      args:
+        executable: /bin/bash
+
+# now automatically run certbot-copy.yml to distibute the renewed SSL certs to our host vms
+- import_playbook: certbot-copy.yml
+
+- name: Play 4 (copy) - cleanup previously fetched SSL certs (local)
+  hosts: localhost      # ansible localhost -m ping -vvv
+  connection: local
+  tasks:
+    - name: Cleanup
+      shell: rm -f ~/ansible/fetched/certbot/*.pem
+      args:
+        executable: /bin/bash  
