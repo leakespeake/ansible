@@ -1,5 +1,5 @@
 ---
-- name: Play 1 (fetch) - replace SSL certificate for Jenkins
+- name: Play 1 - replace SSL certificate for Jenkins
   hosts: jenkins        # ansible -i ~/ansible/inventory.ini jenkins -m ping
   become: true
   tasks:
@@ -22,7 +22,7 @@
         chdir: /home/ubuntu/docker-compose/jenkins
         executable: /bin/bash
 
-- name: Play 2 (fetch) - replace SSL certificate for Prometheus
+- name: Play 2 - replace SSL certificate for Prometheus
   hosts: localhost      # ansible localhost -m ping -vvv
   connection: local
   tasks:  
@@ -52,7 +52,7 @@
         executable: /bin/bash
         chdir: ~/ansible
 
-- name: Play 3 (fetch) - replace SSL certificate for PHP IPAM
+- name: Play 3 - replace SSL certificate for PHP IPAM
   hosts: php_ipam       # ansible -i ~/ansible/inventory.ini php_ipam -m ping
   become: true
   tasks:  
@@ -73,4 +73,27 @@
         docker-compose up -d
       args:
         chdir: /home/ubuntu/docker-compose/php-ipam
+        executable: /bin/bash
+
+- name: Play 4 - replace SSL certificate for Vault
+  hosts: vault          # ansible -i ~/ansible/inventory.ini vault -m ping
+  become: true
+  tasks:  
+    - name: Remove old Vault SSL certs
+      shell: rm -f /vault/ssl/*.pem
+      args:
+        executable: /bin/bash       
+
+    - name: Copy renewed SSL cert with appropriate permissions (docker-compose)
+      copy:
+        src: ~/ansible/fetched/certbot/
+        dest: /home/ubuntu/docker-compose/vault/ssl 
+
+    - name: Restart Vault container to load certs - requires manual unseal op
+      shell: |
+        docker stop vault-server
+        docker rm vault-server
+        docker-compose up -d
+      args:
+        chdir: /home/ubuntu/docker-compose/vault
         executable: /bin/bash

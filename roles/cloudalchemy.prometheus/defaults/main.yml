@@ -73,6 +73,13 @@ prometheus_targets:
     - jenkins-prd-01.int.leakespeake.com:8080
     labels:
       env: prod
+ 
+  vault-prd-01:
+  - targets:
+    - vault-prd-01.int.leakespeake.com:9100
+    - vault-prd-01.int.leakespeake.com:8080
+    labels:
+      env: prod     
 
   acme-prd-01:
   - targets:
@@ -106,10 +113,33 @@ prometheus_scrape_configs:
       - files:
           - "{{ prometheus_config_dir }}/file_sd/jenkins-prd-01.yml"
           
+  - job_name: "vault-prd-01"
+    file_sd_configs:
+      - files:
+          - "{{ prometheus_config_dir }}/file_sd/vault-prd-01.yml"          
+          
   - job_name: "acme-prd-01"
     file_sd_configs:
       - files:
-          - "{{ prometheus_config_dir }}/file_sd/acme-prd-01.yml"                          
+          - "{{ prometheus_config_dir }}/file_sd/acme-prd-01.yml"
+
+  - job_name: "blackbox-exporter-endpoints"
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+    - targets:
+      - https://jenkins-prd-01.int.leakespeake.com
+      - https://prometheus-prd-01.int.leakespeake.com:9090
+      - https://php-ipam-prd-01.int.leakespeake.com
+      - https://vault-prd-01.int.leakespeake.com:8200
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 127.0.0.1:9115             
 
 # Alternative config file name, searched in ansible templates path.
 prometheus_config_file: 'prometheus.yml.j2'
