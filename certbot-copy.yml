@@ -15,8 +15,8 @@
 
     - name: Reload reverse proxy for Jenkins
       shell: |
-        docker stop php-ipam_phpipam-haproxy_1
-        docker rm php-ipam_phpipam-haproxy_1
+        docker stop cicd-haproxy
+        docker rm cicd-haproxy
         docker-compose up -d
       args:
         chdir: /home/ubuntu/docker-compose/jenkins
@@ -80,10 +80,11 @@
   become: true
   tasks:  
     - name: Remove old Vault SSL certs
-      shell: rm -f /vault/ssl/*.pem
+      shell: rm -f /home/ubuntu/docker-compose/vault/ssl/*.pem
       args:
         executable: /bin/bash       
 
+    # .pem file names increment at each renewal - manual name changes needed atm in ~/docker-compose/vault/config/vault-config.json
     - name: Copy renewed SSL cert with appropriate permissions (docker-compose)
       copy:
         src: ~/ansible/fetched/certbot/
