@@ -36,6 +36,9 @@
       args:
         executable: /bin/bash
 
+# now automatically increment the hardcoded numerical value of the .pem files within our Docker configuration 
+- import_playbook: certbot-increment-pem.yml
+
 # now automatically run certbot-copy.yml to distibute the renewed SSL certs to our host vms
 - import_playbook: certbot-copy.yml
 

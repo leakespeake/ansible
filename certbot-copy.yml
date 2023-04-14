@@ -37,7 +37,8 @@
       args:
         executable: /bin/bash       
 
-    # .pem file names increment at each renewal - manual name changes needed atm in /files/webconfig.yml and tasks/install.yml
+    # .pem file names increment at each renewal - hardcoded within /files/webconfig.yml and tasks/install.yml
+    # these numerical values are incremented automatically via certbot-increment-pem.yml
     - name: Copy renewed SSL certs to role files/ directory for upload
       copy:
         src: "{{ item.path }}"
@@ -84,7 +85,8 @@
       args:
         executable: /bin/bash       
 
-    # .pem file names increment at each renewal - manual name changes needed atm in ~/docker-compose/vault/config/vault-config.json
+    # .pem file names increment at each renewal - hardcoded within ~/docker-compose/vault/config/vault-config.json
+    # these numerical values are incremented automatically via certbot-increment-pem.yml
     - name: Copy renewed SSL cert with appropriate permissions (docker-compose)
       copy:
         src: ~/ansible/fetched/certbot/
