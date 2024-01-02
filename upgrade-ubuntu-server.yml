@@ -1,7 +1,11 @@
-- hosts: all
+- hosts: all  # amend ansible groups via inventory.ini for centralized node targeting
   become: true
   become_user: root
   tasks:
+    - name: Print current Ubuntu Server and Linux kernel versions with the debug module
+      debug: 
+        msg="For {{ ansible_hostname }} - the current Linux kernel version is {{ ansible_kernel }} and Ubuntu Server version is {{ ansible_distribution_version }}"     
+
     - name: Update apt repo and cache on all Ubuntu Servers
       apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
 
@@ -24,4 +28,8 @@
 
     - name: Remove dependencies that are no longer required
       apt:
-        autoremove: yes
+        autoremove: yes   
+
+    - name: Print Ubuntu Server and Linux kernel versions with the debug module
+      debug: 
+        msg="For {{ ansible_hostname }} - the Linux kernel version is {{ ansible_kernel }} and Ubuntu Server version is {{ ansible_distribution_version }}" 
