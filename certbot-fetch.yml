@@ -1,14 +1,58 @@
 ---
-- name: Play 1 (copy) - remove previously fetched SSL certs (local)
+- name: Play 1 - Remove previously fetched SSL certs (local)
   hosts: localhost      # ansible localhost -m ping -vvv
   connection: local
   tasks:
     - name: Remove previously fetched SSL certs
-      shell: rm -f ~/ansible/fetched/certbot/*.pem
+      shell: rm -f /home/barry/ansible/fetched/certbot/*.pem
       args:
         executable: /bin/bash  
 
-- name: Play 2 (copy) - find and fetch renewed SSL certificates (remote)
+- name: Play 2 - Check the key pair modulus values match before continuing
+  hosts: certbot_host   # ansible -i ~/ansible/inventory.ini certbot_host -m ping
+  become: true
+  tasks:
+    - name: Find renewed SSL certicate
+      find: 
+        paths: /home/ubuntu/letsencrypt/config/archive/int.leakespeake.com
+        patterns: 'fullchain*'
+        age: -30d
+        recurse: no
+      register: certificate_to_check
+
+    - name: Find renewed SSL private key
+      find: 
+        paths: /home/ubuntu/letsencrypt/config/archive/int.leakespeake.com
+        patterns: 'privkey*'
+        age: -30d
+        recurse: no
+      register: private_key_to_check
+
+    - name: Get certificate modulus
+      shell: "openssl x509 -noout -modulus -in /home/ubuntu/letsencrypt/config/archive/int.leakespeake.com/{{ certificate_to_check }} | openssl md5"
+      register: certificate_modulus
+
+    - name: Get private key modulus
+      shell: "openssl rsa -noout -modulus -in /home/ubuntu/letsencrypt/config/archive/int.leakespeake.com/{{ private_key_to_check }} | openssl md5"
+      register: private_key_modulus
+
+    - name: Compare both modulus values
+      fail:
+        msg: "The certificate and private key modulus values do not match! Terminating playbook."
+      when: certificate_modulus.stdout != private_key_modulus.stdout
+
+    - name: Print modulus values for both key pairs
+      debug:
+        msg:
+        - "Both key pairs match!"
+        - "The certificate modulus is {{ certificate_modulus.stdout }}" 
+        - "The private key modulus is {{ private_key_modulus.stdout }}"
+
+    - name: Pause for 5 seconds to check modulus values
+      pause:
+        seconds: 5
+
+- name: Play 3 - Find and fetch renewed SSL certificates (remote)
   hosts: certbot_host   # ansible -i ~/ansible/inventory.ini certbot_host -m ping
   become: true
   tasks:
@@ -23,16 +67,16 @@
     - name: Fetch renewed SSL certs from Certbot node
       fetch:
         src: "{{ item.path }}"
-        dest: ~/ansible/fetched/certbot/
+        dest: /home/barry/ansible/fetched/certbot/
         flat: yes
       with_items: "{{ files_to_fetch.files }}"
 
-- name: Play 3 (copy) - concatenate renewed SSL certs (local)
+- name: Play 4 - Concatenate renewed SSL certs (local)
   hosts: localhost      # ansible localhost -m ping -vvv
   connection: local
   tasks:
     - name: Concatenate renewed SSL certs
-      shell: cat ~/ansible/fetched/certbot/*.pem > ~/ansible/fetched/certbot/int.leakespeake.com.pem
+      shell: cat /home/barry/ansible/fetched/certbot/*.pem > /home/barry/ansible/fetched/certbot/int.leakespeake.com.pem
       args:
         executable: /bin/bash
 
@@ -42,11 +86,11 @@
 # now automatically run certbot-copy.yml to distibute the renewed SSL certs to our host vms
 - import_playbook: certbot-copy.yml
 
-- name: Play 4 (copy) - cleanup previously fetched SSL certs (local)
+- name: Play 5 - Cleanup previously fetched SSL certs (local)
   hosts: localhost      # ansible localhost -m ping -vvv
   connection: local
   tasks:
     - name: Cleanup
-      shell: rm -f ~/ansible/fetched/certbot/*.pem
+      shell: rm -f /home/barry/ansible/fetched/certbot/*.pem
       args:
         executable: /bin/bash  
