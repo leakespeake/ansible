@@ -100,3 +100,29 @@
       args:
         chdir: /home/ubuntu/docker-compose/vault
         executable: /bin/bash
+        
+- name: Play 5 - replace SSL certificate for Consul
+  hosts: consul          # ansible -i ~/ansible/inventory.ini consul -m ping
+  become: true
+  tasks:  
+    - name: Remove old Consul SSL certs
+      shell: rm -f /home/ubuntu/docker-compose/consul/ssl/*.pem
+      args:
+        executable: /bin/bash       
+
+    # .pem file names increment at each renewal - hardcoded within ~/docker-compose/consul/nginx.conf
+    # these numerical values are incremented automatically via certbot-increment-pem.yml
+    - name: Copy renewed SSL cert with appropriate permissions (docker-compose)
+      copy:
+        src: /home/barry/ansible/fetched/certbot/
+        dest: /home/ubuntu/docker-compose/consul/ssl 
+
+    - name: Restart nginx container to load certs
+      shell: |
+        docker stop consul-nginx
+        docker rm consul-nginx
+        docker-compose up -d
+      args:
+        chdir: /home/ubuntu/docker-compose/consul
+        executable: /bin/bash
+        

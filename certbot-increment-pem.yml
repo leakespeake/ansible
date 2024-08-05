@@ -74,4 +74,38 @@
         replace: "privkey{{ new_privkey_value }}.pem"
       with_items: "{{ file_paths }}"
 
+- name: Play 3 - Increment hardcoded numerical value of the pem files within Consul configuration
+  hosts: consul          # ansible -i ~/ansible/inventory.ini consul -m ping
+  #become: true
+  vars:
+    fullchain_filename: "fullchain3.pem"    ### CHANGE ###
+    privkey_filename: "privkey3.pem"        ### CHANGE ###
+    file_path: "~/docker-compose/consul/nginx.conf"
+  tasks:
+    - name: get current numerical value for fullchain
+      shell: "echo '{{ fullchain_filename }}' | grep -o '[0-9]\\+'"
+      register: fullchain_value
 
+    - name: increment numerical value for fullchain
+      set_fact:
+        new_fullchain_value: "{{ fullchain_value.stdout|int + 1 }}"
+
+    - name: update fullchain filename in file path
+      replace:
+        path: "{{ file_path }}"
+        regexp: "{{ fullchain_filename }}"
+        replace: "fullchain{{ new_fullchain_value }}.pem"
+
+    - name: get current numerical value for privkey
+      shell: "echo '{{ privkey_filename }}' | grep -o '[0-9]\\+'"
+      register: privkey_value
+
+    - name: increment numerical value for privkey
+      set_fact:
+        new_privkey_value: "{{ privkey_value.stdout|int + 1 }}"
+
+    - name: update privkey filename in file path
+      replace:
+        path: "{{ file_path }}"
+        regexp: "{{ privkey_filename }}"
+        replace: "privkey{{ new_privkey_value }}.pem"
