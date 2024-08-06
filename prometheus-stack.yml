@@ -7,7 +7,7 @@
       import_role:
         name: cloudalchemy.prometheus
       vars:
-        prometheus_version: latest
+        prometheus_version: 2.53.1
         prometheus_storage_retention: "15d"
         prometheus_web_external_url: "https://{{ ansible_host }}:9090"
         prometheus_alertmanager_config:
@@ -19,13 +19,13 @@
       import_role:
         name: cloudalchemy.grafana
       vars:
-        grafana_version: latest
+        grafana_version: 11.1.3
 
     - name: Use Ansible Galaxy Alertmanager role
       import_role:
         name: cloudalchemy.alertmanager
       vars:
-        alertmanager_version: latest
+        alertmanager_version: 0.27.0
         alertmanager_receivers:
           - name: email
             email_configs:  
@@ -51,4 +51,4 @@
       import_role:
         name: cloudalchemy.blackbox-exporter
       vars:
-        blackbox_exporter_version: 0.22.0              
+        blackbox_exporter_version: 0.25.0              
