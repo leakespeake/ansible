@@ -1,45 +1,89 @@
 ![ansible](https://user-images.githubusercontent.com/45919758/85199649-18b72000-b2e9-11ea-8725-df85186a6a57.png)
 
-Various Ansible roles and ad-hoc playbooks - mainly intended for fresh VM deployments via Terraform - then ran via **site.yml** master playbook
+Various Ansible roles and ad-hoc playbooks. Intended for the configuration of fresh Ubuntu Server VM's deployments with Terraform using a Packer golden template. Ran via the **site.yml** master playbook;
 ```
-ansible-playbook -i ~/ansible/inventory.ini -u ubuntu site.yml
+ansible-playbook site.yml
 ```
 ---
 
 # Best Practices
 General best practices on how to organise, develop and deploy your Ansible playbooks and roles. 
 
-## Ansible Control Node - communications
-Assuming a new install of Ansible via `pip3 install ansible` we'll want to generate an SSH authentication key pair for Ansible use, to avoid passwords for client connections;
+## Ansible Control Node setup
+Assuming a new install of Ansible on a new Macbook, we'll want to first `git clone` this repo so we have access to `inventory.ini` and supporting files.
+
+Next, generate an SSH key pair for Ansible authentication - to avoid password use for host VM connections;
 ```
-ssh-keygen -t rsa
+ssh-keygen -t ed25519 -C "email"
 ```
-*Enter file in which to save the key (/home/ubuntu/.ssh/id_rsa):* /home/ubuntu/.ssh/ansible_id_rsa
+Save the keys as: `/Users/$USER/.ssh/ansible_id_ed25519`
 
 DO NOT ADD A PASSPHRASE FOR THE PRIVATE KEY
 
-Once created, add the alias ‘keys’ to **~/.bashrc** to start the ssh-agent then load the private key for use;
+Once created, copy the public key to each of the host VMs referenced in `inventory.ini` - example;
 ```
-# to list all private keys with directory location use; ssh-add -l
-alias keys='eval `ssh-agent` ; ssh-add /home/ubuntu/.ssh/ansible_id_rsa'
+ssh-copy-id -i ~/.ssh/ansible_id_ed25519.pub ubuntu@10.1.1.100
 ```
-Ensure your Packer templates either have a dedicated 'ansible' user baked in, or use the initial user account (here we are using 'ubuntu') - either way, ensure this account is a member of sudoers so that Ansible can use it with sudo and no password on the remote VM - as per **become: true**
+This new entry should then be visible on each remote host via `cat /home/ubuntu/.ssh/authorized_keys`
+
+Now add the following to your local **~/.bashrc** to start the `ssh-agent` and load the private key for use each time;
+```
+### START THE SSH AGENT THEN LOAD OUR PRIVATE SSH KEYS - to list the private keys available and their location use; ssh-add -l
+eval `ssh-agent`
+ssh-add ~/.ssh/ansible_id_ed25519
+```
+Ensure your **Packer templates** either have a dedicated `ansible` user baked in, or use the initial user account configuration (here we are using `ubuntu`) - either way, ensure this account is a member of **sudoers** so that Ansible can use it with `sudo` as per **become: true**. Our connection info in `inventory.ini` is set to use the following for each host VM;
+
+```
+ansible_connection=ssh
+ansible_user=ubuntu
+```
+Next lets confirm the configuration file that our Ansible Control Node is using via `ansible --version`;
+```
+ansible [core 2.20.6]
+  config file = /Users/$USER/.ansible.cfg
+```
+Edit this so Ansible can always locate our cloned `inventory.ini` and new private key - this allows for simplified `ansible` commands (without the use of additional flags) - use `nano ~/.ansible.cfg` and add;
+```
+[defaults]
+inventory = /Users/$USER/Development/github/leakespeake/ansible/inventory.ini
+private_key_file = /Users/$USER/.ssh/ansible_id_ed25519
+```
+Now let's test the connections! The first targets a group name, the second targets all hosts;
+```
+cd ~/Development/github/leakespeake/ansible
+ansible jenkins -m ping
+ansible all -m ping
+```
+NOTE: in the event that we have locked down password access on our Ubuntu Server VMs (via Packer), we'll need to use the Web Console in vCenter Server to temporarily change the `PasswordAuthentication` and `KbdInteractiveAuthentication` values to allow the use of `ssh-copy-id` (above);
+```
+sudo nano /etc/ssh/sshd_config
+sudo systemctl restart ssh
+```
+We can then connect as per this example and set the values back;
+```
+ssh -i /Users/$USER/.ssh/ansible_id_ed25519 'ubuntu@10.1.1.100'
+```
+
+## Vault Backup
+Let's ensure our SSH keys are backed up safely to Vault - TBD
+
+## New Host VM setup
 
 Once a VM is deployed via Terraform, we should prep the comms from the Ansible Control Node by; 
 
 - [1] amending **inventory.ini** the reflect the IP(s) of the new VM(s)
-- [2] using the **ssh-copy-id** utility to copy your public ssh key to the new VM(s) - the .pub contents should then be visible on the target host(s) in **/home/ubuntu/.ssh/authorized_keys** - note that since we've copied our public key to the ‘ubuntu’ user directory on the target, we must specify this same account as a variable in our inventory via **ansible_user=ubuntu**
+- [2] using the **ssh-copy-id** utility to copy your public key to the new VM(s) - the `.pub` contents should then be visible on the target host(s) in **/home/ubuntu/.ssh/authorized_keys** - note that since we've copied our public key to the ‘ubuntu’ user directory on the target, we must specify this same account as a variable in our inventory via **ansible_user=ubuntu**
 - [3] test the connection to the new VM(s) with the **ping module** using the inventory group name(s)
 - [4] test sudo group membership for our **ansible_user** account - run **tail -f /var/log/auth.log** in parallel on the remote host and you should see similar to - *Accepted publickey for ubuntu from {source IP) port {source port} ssh2*
 - [5] test the VM(s) remote docker daemon connection with **docker -H**
 ```
 [1] nano ~/ansible/inventory.ini
-[2] ssh-copy-id -i ~/.ssh/ansible_id_rsa.pub ubuntu@10.10.10.10
-[3] ansible -i ~/ansible/inventory.ini ubuntu_group_name -m ping
-[4] ssh ubuntu@10.10.10.10 sudo ls /etc
-[5] docker -H 10.10.10.10:2376 ps -a
+[2] ssh-copy-id -i ~/.ssh/ansible_id_ed25519.pub ubuntu@10.1.1.100
+[3] ansible ubuntu_group_name -m ping
+[4] ssh -i ~/.ssh/ansible_id_ed25519 'ubuntu@10.1.1.100'
+[5] docker -H 10.1.1.100:2376 ps -a
 ```
-Note its safer to ensure only the dedicated Ansible user account can read and write to the inventory.ini file.
 
 ---
 ## Playbook Organisation
